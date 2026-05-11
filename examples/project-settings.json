@@ -1,0 +1,14 @@
+{
+  "_comment": "이 파일을 새 SI 프로젝트의 .claude/settings.json으로 복사하면 팀원이 프로젝트 클론 후 신뢰 시 자동으로 team-tools 마켓플레이스가 등록되고 project 플러그인이 활성화됩니다.",
+  "extraKnownMarketplaces": {
+    "team-tools": {
+      "source": {
+        "source": "github",
+        "repo": "romis9724/claude-project-plugin"
+      }
+    }
+  },
+  "enabledPlugins": {
+    "project@team-tools": true
+  }
+}

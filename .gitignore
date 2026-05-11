@@ -1,0 +1,20 @@
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Temp
+*.tmp
+*.bak
+_*-extract/
+
+# Local Claude state (project repo는 산출물·작업 흔적 commit 안 함)
+.claude/projects/
+.claude/sessions/

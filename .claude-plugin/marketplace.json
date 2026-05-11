@@ -1,0 +1,17 @@
+{
+  "name": "team-tools",
+  "owner": {
+    "name": "romis9724",
+    "email": "romis9724@gmail.com"
+  },
+  "metadata": {
+    "description": "Claude Code 팀 도구 마켓플레이스. AI 에이전트 기반 SI 프로젝트용 플러그인 모음."
+  },
+  "plugins": [
+    {
+      "name": "project",
+      "source": "./plugins/project",
+      "description": "AI 에이전트 기반 SI 프로젝트 산출물 생성 플러그인. init/doc/bundle 3개 스킬 + 106개 산출물 템플릿 + 방법론 지식 문서 제공."
+    }
+  ]
+}
