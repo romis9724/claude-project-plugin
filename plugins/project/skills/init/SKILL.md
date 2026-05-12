@@ -50,7 +50,16 @@ AskUserQuestion으로 아래 **4개 질문**을 순차적으로 수집한다. AI
 - 프로젝트 목적 (2~3문장)
 - 예상 기간 (예: `2026-03 ~ 2027-02`)
 
-**Q2. 기술·인프라·하네스**
+**Q2. 시스템 유형 + 컴포넌트별 기술 스택 + 인프라·하네스**
+
+> Q2는 정보량이 많으므로 AskUserQuestion을 2회 분할해 받는다.
+> - **Q2-A**: 시스템 유형 + Backend / User Frontend / Admin Frontend / Mobile 4슬롯 스택
+> - **Q2-B**: DB 4축 + 인프라·망환경 + CI/CD
+
+---
+
+**Q2-A. 시스템 유형 + 컴포넌트별 스택**
+
 - **시스템 유형** (다중 선택):
   - `차세대 코어 시스템(레거시 마이그레이션)`
   - `대고객 웹 서비스(B2C)`
@@ -63,7 +72,36 @@ AskUserQuestion으로 아래 **4개 질문**을 순차적으로 수집한다. AI
   - `메시징·스트리밍 처리`
   - `행정·민원·전자정부 시스템`
   - `결제·금융 트랜잭션`
-- **언어 + 프레임워크** (자유 입력, 다중 가능. 예: `Java 17 + Spring Boot 3, React + Next.js, Kotlin + Android`)
+
+SI 프로젝트는 거의 항상 백엔드·사용자 화면·관리자 화면을 별도 컴포넌트로 구분하므로, 각 슬롯을 분리해 수집한다. (각 슬롯이 다른 팀·다른 배포 파이프라인을 가지는 게 일반적)
+
+- **Backend / API 서버**:
+  - 사용 여부: `있음` / `없음 (프론트 전용·정적 사이트)`
+  - 있을 때 스택 (자유 입력, 예: `Java 17 + Spring Boot 3`, `Node.js + NestJS`, `Python + FastAPI`, `Kotlin + Spring`, `.NET 8`)
+
+- **사용자 Frontend** (대고객·외부 사용자용 화면):
+  - 사용 여부: `있음` / `없음 (API only)`
+  - 있을 때 스택 (자유 입력, 예: `React + Next.js`, `Vue 3 + Nuxt`, `Angular`, `SvelteKit`)
+
+- **관리자 Frontend** (운영자·내부 관리자용 화면):
+  - 사용 형태:
+    - `별도 화면 (Admin이 사용자 FE와 완전히 분리)`
+    - `사용자 FE에 통합 (역할 기반으로 사용자 화면 안에서 관리자 메뉴 노출)`
+    - `없음 (관리는 DB/스크립트로 직접)`
+  - 별도 또는 통합인 경우 스택 (자유 입력, 예: `React Admin`, `Ant Design Pro`, `Vue + Element Plus`, `Refine`, `사용자 FE와 동일 스택`)
+
+- **Mobile**:
+  - 유형:
+    - `없음`
+    - `네이티브 (iOS + Android 별도)`
+    - `하이브리드 (React Native / Flutter)`
+    - `PWA (웹앱)`
+  - 있을 때 스택 (자유 입력, 예: `Flutter 3.19`, `React Native + Expo`, `Swift 5 + Kotlin`, `PWA(사용자 FE와 동일)`)
+
+---
+
+**Q2-B. DB + 인프라·망환경 + CI/CD**
+
 - **DB** (4축 다중 선택):
   - RDB: `Oracle` / `PostgreSQL` / `MySQL` / `MS SQL Server` / `Tibero` / `DB2` / `없음`
   - NoSQL: `MongoDB` / `Cassandra` / `Redis` / `DynamoDB` / `없음`
@@ -99,13 +137,21 @@ AskUserQuestion으로 아래 **4개 질문**을 순차적으로 수집한다. AI
 ```
 [기본]            KR_NAME, EN_NAME, PURPOSE, PERIOD
 
-[기술]            SYSTEM_TYPES (배열), STACK, DB_RDB, DB_NOSQL, DB_SEARCH,
-                  DB_ANALYTICS, INFRA, HARNESS
+[시스템 유형]      SYSTEM_TYPES (배열)
+
+[컴포넌트별 스택]   STACK_BACKEND_USE (있음/없음), STACK_BACKEND (자유텍스트)
+                  STACK_USER_FE_USE (있음/없음), STACK_USER_FE
+                  STACK_ADMIN_FE_MODE (separate/integrated/none), STACK_ADMIN_FE
+                  STACK_MOBILE_TYPE (none/native/hybrid/pwa), STACK_MOBILE
+
+[데이터·인프라]    DB_RDB, DB_NOSQL, DB_SEARCH, DB_ANALYTICS, INFRA, HARNESS
 
 [보안]            AUTH, DATA_SENSITIVITY, COMPLIANCE (배열)
 
 [AI·연동]         LLM, AI_USAGE (배열), EXT_API_LIST, PG, MESSAGING (배열)
 ```
+
+> 산출물·CLAUDE.md에서 통합 표기가 필요할 때는 4개 STACK_* 변수를 콤마로 합쳐 `STACK_COMBINED` 형태로 사용할 수 있다. 다만 아키텍처·CI/CD·배포 산출물은 컴포넌트별로 분리해 작성한다.
 
 **누락 처리**: 사용자가 답하지 않거나 "없음"을 선택한 항목은 CLAUDE.md·산출물에서 자연스럽게 생략. 행정 정보(발주처·계약·MM·검수·SLA 등)는 첫 doc/bundle 호출 시점에 `.claude/project-context.json`으로 수집됨을 CLAUDE.md에 명시.
 
@@ -151,12 +197,17 @@ scripts/
 ### 3-2. `docs/02-architecture/software-architecture.md` — SW 아키텍처 기술서
 
 필수 섹션:
-- **아키텍처 스타일**: SYSTEM_TYPE + STACK 기반으로 레이어드/이벤트 기반/마이크로서비스 중 제안
-- **컴포넌트 표** (명칭·역할·기술): STACK에서 최소 4~6개 컴포넌트 도출
-- **Mermaid 컴포넌트 다이어그램**: 위 컴포넌트로 관계 다이어그램 작성
-- **데이터 흐름**: 주요 시나리오 2개 텍스트로 기술
+- **아키텍처 스타일**: SYSTEM_TYPE + STACK_* 기반으로 레이어드/이벤트 기반/마이크로서비스 중 제안
+- **컴포넌트 표** (명칭·역할·기술): 사용 중인 슬롯별로 컴포넌트 분리 작성
+  - Backend (있으면): API 서버·도메인 서비스·배치 등
+  - 사용자 Frontend (있으면): SPA·SSR·BFF 등
+  - 관리자 Frontend (별도면 별도 컴포넌트, 통합이면 사용자 FE의 권한 분기로 기술)
+  - Mobile (있으면): 클라이언트 앱 + 필요 시 PUSH/원격구성 백엔드
+  - 최소 4~6개 컴포넌트 (사용 슬롯 수에 따라 조정)
+- **Mermaid 컴포넌트 다이어그램**: 위 컴포넌트로 관계 다이어그램 작성 — Backend / User FE / Admin FE / Mobile / DB / 외부 API를 노드로
+- **데이터 흐름**: 주요 시나리오 2개 텍스트로 기술 (사용자 FE → Backend → DB 1건, Admin FE → Backend → DB 1건 권장)
 - **AI 통합 아키텍처** (LLM ≠ 사용안함이면): LLM 호출 흐름, 프롬프트 관리, 응답 검증 기술
-- **기술 결정 근거 표**: 채택 기술, 대안, 선택 이유
+- **기술 결정 근거 표**: 채택 기술, 대안, 선택 이유 — 컴포넌트별로 그룹화
 - **품질속성 시나리오**: 성능·가용성·보안 각 1개
 
 ### 3-3. `docs/02-architecture/security-definition.md` — 보안 정의서
@@ -224,7 +275,10 @@ DB가 없음이면 이 파일 생성 건너뜀.
 | 항목 | 내용 |
 |------|------|
 | 시스템 유형 | {SYSTEM_TYPES} |
-| 기술 스택 | {STACK} |
+| Backend / API | {STACK_BACKEND_USE: "있음/없음"} — {STACK_BACKEND} |
+| 사용자 Frontend | {STACK_USER_FE_USE: "있음/없음"} — {STACK_USER_FE} |
+| 관리자 Frontend | {STACK_ADMIN_FE_MODE: "별도/통합/없음"} — {STACK_ADMIN_FE} |
+| Mobile | {STACK_MOBILE_TYPE: "없음/네이티브/하이브리드/PWA"} — {STACK_MOBILE} |
 | RDB | {DB_RDB} |
 | NoSQL | {DB_NOSQL} |
 | 검색 | {DB_SEARCH} |
@@ -263,10 +317,11 @@ scripts/    — 빌드·배포 스크립트
 
 ## 코드 컨벤션
 
-- **언어**: {STACK에서 주요 언어 추출}
+- **언어**: {모든 STACK_*에서 주요 언어 추출 — Backend / User FE / Admin FE / Mobile 각각}
 - **커밋**: \`type(scope): 한글 메시지\` (feat/fix/docs/refactor/test/chore/security)
+  - scope는 컴포넌트 prefix 권장: `feat(backend): ...`, `fix(user-fe): ...`, `chore(admin-fe): ...`, `feat(mobile): ...`
 - **브랜치**: \`feature/{ticket}-{desc}\`, \`fix/{ticket}-{desc}\`
-- **린터/포매터**: TODO
+- **린터/포매터**: 컴포넌트별 — TODO
 
 ## AI 에이전트 작업 원칙
 
@@ -384,17 +439,26 @@ scripts/    — 빌드·배포 스크립트
   },
   "env": {
     "CLAUDE_CONTEXT_PROJECT": "{EN_NAME}",
-    "CLAUDE_CONTEXT_STACK": "{STACK}"
+    "CLAUDE_CONTEXT_STACK_BACKEND": "{STACK_BACKEND}",
+    "CLAUDE_CONTEXT_STACK_USER_FE": "{STACK_USER_FE}",
+    "CLAUDE_CONTEXT_STACK_ADMIN_FE": "{STACK_ADMIN_FE}",
+    "CLAUDE_CONTEXT_STACK_MOBILE": "{STACK_MOBILE}"
   }
 }
 ```
 
-STACK 기반 추가 allow:
+STACK_BACKEND / STACK_USER_FE / STACK_ADMIN_FE / STACK_MOBILE 모두에서 매칭되는 도구를 합집합으로 allow에 추가한다:
+
 - Python → `"Bash(python *)"`, `"Bash(pip *)"`, `"Bash(pytest *)"`, `"Bash(uvicorn *)"`, `"Bash(poetry *)"`, `"Bash(uv *)"`
-- Node.js → `"Bash(npm *)"`, `"Bash(npx *)"`, `"Bash(yarn *)"`, `"Bash(pnpm *)"`
+- Node.js / React / Next / Vue / Angular / SvelteKit / NestJS → `"Bash(npm *)"`, `"Bash(npx *)"`, `"Bash(yarn *)"`, `"Bash(pnpm *)"`
 - Java/Maven → `"Bash(mvn *)"`, `"Bash(java *)"`
-- Java/Gradle → `"Bash(./gradlew *)"`, `"Bash(java *)"`
+- Java/Gradle / Kotlin → `"Bash(./gradlew *)"`, `"Bash(java *)"`
 - Go → `"Bash(go *)"`, `"Bash(gofmt *)"`, `"Bash(golangci-lint *)"`
+- .NET → `"Bash(dotnet *)"`
+- Flutter → `"Bash(flutter *)"`, `"Bash(dart *)"`
+- React Native / Expo → `"Bash(expo *)"`, `"Bash(npx react-native *)"`
+- iOS 네이티브 → `"Bash(xcodebuild *)"`, `"Bash(pod *)"`
+- Android 네이티브 → `"Bash(./gradlew *)"`, `"Bash(adb *)"`
 - Docker → `"Bash(docker *)"`, `"Bash(docker-compose *)"`, `"Bash(docker compose *)"`
 - GitHub Actions → `"Bash(gh *)"`
 - GitLab CI → `"Bash(glab *)"`
