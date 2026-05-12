@@ -1,0 +1,18 @@
+# 줄바꿈 통일
+* text=auto eol=lf
+*.bat text eol=crlf
+*.cmd text eol=crlf
+
+# 바이너리
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.pdf binary
+*.zip binary
+
+# Mobile binaries → Git LFS (Mobile 사용 시 추가)
+# *.keystore filter=lfs diff=lfs merge=lfs -text
+# *.aab filter=lfs diff=lfs merge=lfs -text
+# *.ipa filter=lfs diff=lfs merge=lfs -text
