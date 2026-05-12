@@ -53,7 +53,38 @@ TodoWrite로 각 문서를 task로 등록 (진행 추적).
 
 ---
 
-## STEP 2 — 기존 문서 점검
+## STEP 2 — 컨텍스트 일괄 수집 (`.claude/project-context.json`)
+
+마일스톤 단위 일괄 생성이므로 doc 스킬과 달리 **한 번에 모든 필요 행정 정보를 수집**해 효율을 높인다.
+
+### 2-1. 컨텍스트 파일 확인
+- 없으면 신규 생성
+- 있으면 기존 내용 로드
+
+### 2-2. 마일스톤별 필요 정보 합산
+이번 마일스톤의 필수 문서들이 공통으로 요구하는 행정 정보를 사전 정의에서 추출:
+
+| 마일스톤 | 일괄 수집 항목 |
+|---------|-------------|
+| 00-kickoff | customer.*, contract.*, schedule.kickoff_date/delivery_date, resource.total_mm/partners/customer_involvement, stakeholders[], methodology.* |
+| 01-requirements | customer.name, contract.acceptance, stakeholders[] (현업 검토자) |
+| 02-architecture | (대부분 CLAUDE.md에서 추출) |
+| 03-design | (대부분 CLAUDE.md·소스에서 추출) |
+| 04-implementation | resource.total_mm, methodology.name(스프린트 여부) |
+| 05-testing | contract.acceptance, delivery_format.stages |
+| 06-management | resource.partners, methodology.standards |
+| 07-delivery | operations.owner/runtime/availability/rto_rpo, delivery_format.user_training, customer.contact_person |
+
+### 2-3. 누락 정보 일괄 질문
+컨텍스트 파일에서 누락된 항목들을 묶어 AskUserQuestion 1~3회로 일괄 수집 (개별 doc 호출보다 효율적).
+
+수집 결과로 `.claude/project-context.json` 업데이트.
+
+> 컨텍스트 파일의 상세 구조는 `/project:doc` 스킬의 STEP 3-2 참조.
+
+---
+
+## STEP 3 — 기존 문서 점검
 
 각 필수 문서에 대해:
 - `docs/{milestone}/{file}.md` 존재 여부 확인
@@ -65,35 +96,35 @@ TodoWrite로 각 문서를 task로 등록 (진행 추적).
 
 ---
 
-## STEP 3 — 일괄 생성
+## STEP 4 — 일괄 생성
 
 각 누락 문서에 대해 `doc` 스킬과 동일한 로직으로 생성:
 1. 템플릿 로드
 2. methodology.md에서 작성 가이드 로드
-3. 프로젝트 상태 분석
+3. `.claude/project-context.json` + CLAUDE.md + 소스 분석
 4. 생성 (YAML 프론트매터 + 섹션 채움 + TODO 표기)
 5. 저장 + TodoWrite 완료 표시
 
 **일관성을 위한 공통 컨텍스트**:
-- 한 번에 모든 문서를 생성하므로 공통 변수 캐시 사용
-  - 프로젝트명·스택·이해관계자·핵심 컴포넌트 등은 1회만 분석 후 모든 문서에 동일하게 적용
+- STEP 2에서 수집한 컨텍스트 파일을 모든 문서가 공유 → 발주처명·이해관계자·일정 등이 자동으로 모든 문서에 동일하게 박힘
+- 새로 도출된 정보(예: 새 이해관계자)는 다음 문서 생성 전 컨텍스트 파일에 병합
 
 ---
 
-## STEP 4 — 일관성 점검
+## STEP 5 — 일관성 점검
 
 전체 생성 완료 후 다음을 검증:
 
-### 4-1. 용어 통일
+### 5-1. 용어 통일
 - 모든 신규 문서에서 사용된 주요 명사 추출
 - 동의어·이형 검출 (예: `사용자` vs `이용자`, `시스템` vs `서비스`)
 - 불일치 시 보고
 
-### 4-2. 크로스 레퍼런스
+### 5-2. 크로스 레퍼런스
 - 문서간 참조 링크 (`[XXX](../YY-zz/file.md)`) 유효성 확인
 - 깨진 링크 보고
 
-### 4-3. 6관점 점검
+### 5-3. 6관점 점검
 methodology.md의 해당 마일스톤 6관점 체크리스트 적용:
 
 | 관점 | 점검 항목 (예시 — 01-requirements) |
@@ -107,7 +138,7 @@ methodology.md의 해당 마일스톤 6관점 체크리스트 적용:
 
 ---
 
-## STEP 5 — 완료 보고
+## STEP 6 — 완료 보고
 
 ```
 ✅ {{milestone}} 마일스톤 산출물 생성 완료

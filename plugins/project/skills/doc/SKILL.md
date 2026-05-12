@@ -48,17 +48,117 @@ allowed-tools:
 1. **템플릿 로드**: `{플러그인_경로}/templates/{milestone}/{file}.md` 읽기
    - 플러그인 경로 예: `~/.claude/plugins/marketplaces/claude-plugins-official/plugins/project/`
 2. **작성 가이드 로드**: `{플러그인_경로}/reference/methodology.md`에서 해당 문서 섹션만 추출
+3. **카탈로그 매핑 로드**: `{플러그인_경로}/reference/doc-catalog.md`의 해당 문서 행에서 "마일스톤" 확인
 
 ---
 
-## STEP 3 — 프로젝트 상태 분석
+## STEP 3 — 컨텍스트 파일 확인·수집 (`.claude/project-context.json`)
 
-문서 채움에 필요한 정보를 현재 프로젝트에서 추출:
+**행정 정보(발주처·계약·MM·검수·SLA·이해관계자 등)는 init에서 받지 않는다.** 산출물 생성 시점에 본 스킬·bundle 스킬이 모아 컨텍스트 파일에 저장·재사용한다.
+
+### 3-1. 컨텍스트 파일 존재 여부 확인
+
+`.claude/project-context.json` 파일 존재 여부:
+
+**경우 A — 없음**: 본 호출이 첫 행정 정보 수집 시점
+- 생성할 문서가 어떤 행정 정보를 필요로 하는지 카탈로그·methodology에서 식별
+- 누락 정보를 AskUserQuestion으로 묶어 수집 (한 번에 4문항 이하)
+- 수집 결과로 `.claude/project-context.json` 생성
+
+**경우 B — 있음**: 기존 컨텍스트 활용
+- 파일 로드 → 산출물에 필요한 정보 자동 채움
+- 현재 문서가 필요로 하는데 컨텍스트에 누락된(`{{TBD}}` 또는 키 없음) 항목만 추가 질문
+- 수집한 정보를 컨텍스트 파일에 병합 저장
+
+### 3-2. 컨텍스트 파일 구조
+
+```json
+{
+  "_version": "1.0",
+  "_updated": "YYYY-MM-DD",
+
+  "customer": {
+    "type": "공공기관|금융|제조|통신|유통|의료|교육|기타",
+    "name": "발주처명",
+    "contact_person": "담당자",
+    "contact_email": "이메일"
+  },
+  "contract": {
+    "type": "도급|SI|SM|위탁|자체개발",
+    "acceptance": "단계별|일괄|마일스톤|Agile",
+    "scope_in": ["..."],
+    "scope_out": ["..."]
+  },
+  "schedule": {
+    "kickoff_date": "YYYY-MM-DD",
+    "delivery_date": "YYYY-MM-DD",
+    "milestones": [
+      { "name": "단계명", "date": "YYYY-MM-DD" }
+    ]
+  },
+  "resource": {
+    "total_mm": 0,
+    "budget": "...",
+    "partners": ["..."],
+    "customer_involvement": "없음|검토만|상주|PMO상주"
+  },
+  "stakeholders": [
+    { "role": "역할", "name": "이름" }
+  ],
+  "operations": {
+    "owner": "자체|발주처|SI사 SM|별도 SM",
+    "runtime": "24/7|평일주간|평일24h",
+    "availability": "99.9%|99.99%|99.999%",
+    "rto_rpo": "RTO/RPO 명시"
+  },
+  "methodology": {
+    "name": "폭포수|애자일(스크럼)|하이브리드|RUP|SI 자체",
+    "standards": ["전자정부프레임워크|사내표준|..."]
+  },
+  "delivery_format": {
+    "format": "Markdown|HWP|DOCX|PDF|혼합",
+    "stages": "4단계|6단계|Agile|일괄",
+    "user_training": "있음(매뉴얼+오프라인)|있음(매뉴얼만)|없음"
+  }
+}
+```
+
+### 3-3. 산출물 ↔ 컨텍스트 필드 매핑
+
+생성 대상 문서별 필요 컨텍스트 (없으면 수집):
+
+| 산출물 | 필요 컨텍스트 |
+|--------|------------|
+| project-charter | customer.*, contract.*, schedule.kickoff_date/delivery_date |
+| project-plan | customer.name, schedule.*, resource.*, methodology.* |
+| project-overview | customer.name, contract.type, resource.budget |
+| project-budget | resource.total_mm, resource.budget |
+| project-progress-report | resource.*, schedule.milestones |
+| change-request | customer.name, contract.scope_in/out |
+| project-closure-report | customer.*, schedule.*, resource.* |
+| system-transition-plan | customer.name, operations.owner |
+| operations-plan | operations.availability, operations.runtime, operations.owner |
+| contingency-plan | operations.rto_rpo, operations.availability |
+| phase-evaluation | contract.acceptance |
+| user-training-plan/report | delivery_format.user_training |
+
+### 3-4. 누락 정보 수집 정책
+
+- 첫 호출 시: 카탈로그상 해당 문서 + 같은 마일스톤의 필수 문서가 공통으로 필요로 하는 정보를 묶어 수집
+- 사용자 미답 항목: 컨텍스트 파일에 `{{TBD}}` 저장. 산출물 본문에도 `> ⚠️ TODO: {{설명}}` 표기
+- 추후 다른 문서 생성 시 `{{TBD}}` 발견하면 다시 질문 (강제는 아님 — 사용자가 스킵 가능)
+
+---
+
+## STEP 4 — 프로젝트 상태 분석
+
+기술 정보는 현재 프로젝트에서 추출 (컨텍스트 파일 외):
 
 | 소스 | 추출 정보 |
 |------|----------|
-| `CLAUDE.md` | 프로젝트명·목적·스택·기간·인증·LLM·보안요건 |
-| `docs/00-kickoff/project-charter.md` | 이해관계자·범위·마일스톤 |
+| `CLAUDE.md` | 프로젝트명·목적·스택·DB·인프라·인증·LLM·민감도·규제 |
+| `.claude/project-context.json` | **행정 정보 (발주처·계약·일정·자원·이해관계자·운영·방법론·납품)** |
+| `docs/00-kickoff/project-charter.md` | 범위 In/Out |
 | `docs/01-requirements/requirements.md` | 기능/비기능 요구사항 |
 | `docs/02-architecture/*.md` | 아키텍처 결정·컴포넌트·보안 모델 |
 | `docs/03-design/*.md` | DB 설계·API 설계·컴포넌트 명세 |
@@ -66,7 +166,7 @@ allowed-tools:
 
 ---
 
-## STEP 4 — 문서 생성
+## STEP 5 — 문서 생성
 
 다음 규칙으로 생성:
 
@@ -89,10 +189,12 @@ allowed-tools:
 
 ---
 
-## STEP 5 — 저장 및 보고
+## STEP 6 — 저장 및 보고
 
 저장 위치: `docs/{milestone}/{file}.md`
 - 이미 존재 시 AskUserQuestion으로 사용자 확인 (덮어쓰기/스킵/이름 변경/병합)
+
+생성 후 컨텍스트 파일 업데이트 (STEP 3에서 수집된 정보 + 본 문서 작성 중 알게 된 새 정보).
 
 생성 보고 출력:
 ```
@@ -100,9 +202,13 @@ allowed-tools:
 
 📊 정보 출처:
 - 프로젝트 메타: CLAUDE.md
+- 행정 정보: .claude/project-context.json (필드 N개 사용)
 - 기능 요구사항: docs/01-requirements/requirements.md (5건 인용)
 - 아키텍처 컴포넌트: docs/02-architecture/software-architecture.md (3건 인용)
 - 실제 구현: src/api/ 디렉토리 (2건 추출)
+
+📝 컨텍스트 파일 업데이트:
+- {{새로 추가된 필드 목록 또는 "변경 없음"}}
 
 ⚠️ 사람 입력 필요 (TODO):
 - {{TODO 항목 목록 — 보통 3~7개}}
