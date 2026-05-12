@@ -1,6 +1,6 @@
-# init Q1~Q5 질문 옵션 풀
+# project-setup Q1~Q5 질문 옵션 풀
 
-본 파일은 `/project:init` STEP 1에서 `AskUserQuestion`을 호출할 때 사용하는 옵션 목록이다. SKILL.md가 본 파일을 Read해 각 Q의 옵션으로 사용.
+본 파일은 `/si-project:project-setup` STEP 1에서 `AskUserQuestion`을 호출할 때 사용하는 옵션 목록이다. SKILL.md가 본 파일을 Read해 각 Q의 옵션으로 사용.
 
 총 7회 AskUserQuestion: Q1 / Q2-A / Q2-B / Q3 / Q4 / Q5-A / Q5-B.
 

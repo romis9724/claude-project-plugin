@@ -9,9 +9,9 @@
   },
   "plugins": [
     {
-      "name": "project",
-      "source": "./plugins/project",
-      "description": "AI 에이전트 기반 SI 프로젝트 산출물 생성 플러그인. init/doc/bundle/status/adr 5개 스킬 + 106개 산출물 템플릿 + GHA workflow·pre-commit·SessionStart hook 자동 셋업 + lazy loading + 팀 lesson 공유."
+      "name": "si-project",
+      "source": "./plugins/si-project",
+      "description": "AI 에이전트 기반 SI 프로젝트 산출물 생성 플러그인. project-setup/document/milestone/summary/adr 5개 스킬 + 106개 산출물 템플릿 + GHA workflow·pre-commit·SessionStart hook 자동 셋업 + lazy loading + 팀 lesson 공유."
     }
   ]
 }

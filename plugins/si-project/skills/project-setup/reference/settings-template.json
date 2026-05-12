@@ -34,7 +34,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "echo \"📋 프로젝트: {KR_NAME} | 현황 보기: /project:status | 산출물 생성: /project:doc <이름> 또는 /project:bundle <마일스톤>\"; git log -3 --oneline 2>/dev/null || true"
+            "command": "echo \"📋 프로젝트: {KR_NAME} | 현황 보기: /si-project:project-summary | 산출물 생성: /si-project:project-document <이름> 또는 /si-project:project-milestone <마일스톤>\"; git log -3 --oneline 2>/dev/null || true"
           }
         ]
       }

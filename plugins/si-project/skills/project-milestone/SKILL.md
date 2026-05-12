@@ -1,10 +1,10 @@
 ---
-name: bundle
+name: project-milestone
 description: >
-  마일스톤(단계)의 필수 산출물을 일괄 생성하고 일관성을 점검한다.
+  SI 마일스톤(단계)의 필수 산출물을 일괄 생성하고 일관성을 점검한다.
   발주처 단계별 납품 시점에 호출.
   입력: 마일스톤 식별자(00-kickoff ~ 07-delivery) 또는 한글(요구분석, 아키텍처 등).
-  트리거: "마일스톤 산출물", "단계 납품물 생성", "요구분석 산출물 일괄", "아키텍처 번들"
+  트리거: "마일스톤 산출물 일괄", "단계 납품물 생성", "요구분석 산출물 일괄", "아키텍처 번들 생성", "project milestone"
 user-invocable: true
 allowed-tools:
   - Read
@@ -18,7 +18,7 @@ allowed-tools:
   - TodoWrite
 ---
 
-# /project:bundle — 마일스톤 산출물 번들 생성
+# /si-project:project-milestone — 마일스톤 산출물 번들 생성
 
 특정 마일스톤에 발주처가 요구하는 필수 문서들을 일괄 생성하고 문서간 일관성을 보장한다.
 
@@ -26,7 +26,7 @@ allowed-tools:
 
 ## STEP 0 — 사전 확인 + lessons 참고
 
-- `CLAUDE.md` 존재 여부 → 없으면 `/project:init` 안내 후 중단
+- `CLAUDE.md` 존재 여부 → 없으면 `/si-project:project-setup` 안내 후 중단
 - 사용자 입력 마일스톤 식별
 - **lessons.md 참고 (v2.4)**: `.claude/lessons.md` 존재 시 Read해 컨텍스트로 반영. 일관성 점검 시 lesson에 기록된 과거 불일치 패턴이 있으면 우선 검증.
 
@@ -102,7 +102,7 @@ TodoWrite로 각 문서를 task로 등록 (진행 추적).
 
 수집 결과로 `.claude/project-context.json` 업데이트.
 
-> 컨텍스트 파일의 상세 구조는 `/project:doc` 스킬의 STEP 3-2 참조.
+> 컨텍스트 파일의 상세 구조는 `/si-project:project-document` 스킬의 STEP 3-2 참조.
 
 ---
 
@@ -200,7 +200,7 @@ methodology.md의 해당 마일스톤 6관점 체크리스트 적용:
 ## 사용 예시
 
 ```
-사용자: /project:bundle 01-requirements
+사용자: /si-project:project-milestone 01-requirements
 Claude:
   → reference/doc-catalog.md에서 01-requirements 필수 문서 5개 추출
   → 기존 문서 점검: requirements.md 있음, 나머지 4개 없음

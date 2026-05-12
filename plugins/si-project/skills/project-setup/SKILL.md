@@ -1,12 +1,12 @@
 ---
-name: init
+name: project-setup
 description: >
-  AI 에이전트 기반 신규 프로젝트 초기 환경 일괄 설정.
+  AI 에이전트 기반 신규 SI 프로젝트 초기 환경 일괄 설정.
   PMO·PM·아키텍처·DBA·하네스·보안 6개 관점 통합.
   생성물: CLAUDE.md(≤150줄), .claude/settings.json, .pre-commit-config.yaml, .github/workflows/ci.yml(GHA일 때),
   핵심 문서 7개, ADR-0001, 산출물 템플릿 5~8개(조건부).
-  추가 산출물은 /project:doc 또는 /project:bundle로 필요 시점에 생성.
-  트리거: "프로젝트 초기화", "프로젝트 환경 설정", "init project", "새 프로젝트 셋업"
+  추가 산출물은 /si-project:project-document 또는 /si-project:project-milestone으로 필요 시점에 생성.
+  트리거: "SI 프로젝트 셋업", "신규 SI 프로젝트 초기화", "project setup", "SI 프로젝트 환경 구축"
 user-invocable: true
 allowed-tools:
   - Read
@@ -29,9 +29,9 @@ allowed-tools:
   - AskUserQuestion
 ---
 
-# /project:init — AI Agent 프로젝트 초기화
+# /si-project:project-setup — AI Agent 기반 SI 프로젝트 초기화
 
-SI 프로젝트 산출물 표준 방법론 기반으로 신규 프로젝트의 초기 환경을 자동 설정합니다. 초기화 이후 추가 산출물은 `/project:doc`(개별) 또는 `/project:bundle`(마일스톤 번들)로 생성합니다.
+SI 프로젝트 산출물 표준 방법론 기반으로 신규 프로젝트의 초기 환경을 자동 설정합니다. 초기화 이후 추가 산출물은 `/si-project:project-document`(개별) 또는 `/si-project:project-milestone`(마일스톤 번들)로 생성합니다.
 
 > **v2.5.1 슬림화**: 본 SKILL.md는 워크플로·결정 로직만 보유. 인라인 템플릿·옵션 풀은 `reference/` 디렉토리로 분리. 모든 STEP에서 "Read → placeholder 치환 → Write" 패턴 사용.
 
@@ -204,7 +204,7 @@ scripts/
 - `Read reference/adr/readme.md` → `{DATE}` 치환 → `docs/02-architecture/adr/README.md` Write
 - `Read reference/adr/0001-stack-selection.md` → 모든 placeholder({DATE}, {OWNER}, {SYSTEM_TYPES}, {STACK_*}, {DB_*}, {INFRA}, {AUTH}, {DATA_SENSITIVITY}, {COMPLIANCE}, {PERIOD}, {HARNESS}) 치환 → `docs/02-architecture/adr/0001-stack-selection.md` Write
 
-> 추가 90+ 템플릿은 매 프로젝트 복사하지 않음. `/project:doc <문서명>` 또는 `/project:bundle <마일스톤>`로 필요 시점 생성.
+> 추가 90+ 템플릿은 매 프로젝트 복사하지 않음. `/si-project:project-document <문서명>` 또는 `/si-project:project-milestone <마일스톤>`로 필요 시점 생성.
 
 ---
 
@@ -236,7 +236,7 @@ STEP 0~7 완료 직후 실행 (OS에 맞게 분기):
 ```bash
 git init -b main                              # 또는 git init && git symbolic-ref HEAD refs/heads/main
 git add -A
-git commit -m "chore(meta): 프로젝트 초기화 (project plugin v2.5.1)
+git commit -m "chore(meta): 프로젝트 초기화 (si-project plugin v2.0.0)
 
 - 사용 컴포넌트: {MONOREPO_LAYOUT}
 - Branch 전략: {GIT_FLOW_STYLE}
@@ -276,7 +276,7 @@ git commit -m "chore(meta): 프로젝트 초기화 (project plugin v2.5.1)
 - [ ] `scripts/git-setup.md` 따라 branch protection / CODEOWNERS / Required checks 적용
 - [ ] CI 파이프라인 초기 설정 (린터·테스트·SAST·SCA·이미지 스캔)
 - [ ] (Mobile 있으면) `git lfs install` + LFS track 활성화
-- [ ] `/project:status` 시범 실행 — 30줄 요약 정상 출력 확인
+- [ ] `/si-project:project-summary` 시범 실행 — 30줄 요약 정상 출력 확인
 - [ ] (선택) `.claude/lessons.md`에 팀 lesson 1건 추가
 - [ ] `pip install pre-commit && pre-commit install` — commit 가드 활성화 (1회)
 - [ ] (HARNESS=GitHub Actions) `.github/workflows/ci.yml` 잡 검토 + 도구 버전 핀 조정

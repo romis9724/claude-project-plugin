@@ -3,7 +3,7 @@
 본 디렉토리는 본 프로젝트의 주요 아키텍처 결정을 영구 기록한다 (MADR 형식).
 
 ## 새 ADR 작성
-`/project:adr "결정 제목"` 호출로 다음 번호의 ADR을 자동 생성.
+`/si-project:project-adr "결정 제목"` 호출로 다음 번호의 ADR을 자동 생성.
 
 ## 형식 (MADR 0.x)
 - Status: Proposed / Accepted / Deprecated / Superseded by ADR-XXXX

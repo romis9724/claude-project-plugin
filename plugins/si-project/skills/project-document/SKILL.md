@@ -1,10 +1,10 @@
 ---
-name: doc
+name: project-document
 description: >
   SI 표준 형식의 개별 산출물 문서를 현재 프로젝트 상태에서 생성한다.
   발주처가 특정 문서를 요청했을 때 즉시 1건 생성.
   입력: 한글 문서명(예: "인터페이스요구사항정의서") 또는 영문 파일명(예: "interface-requirements").
-  트리거: "산출물 만들어줘", "doc generate", "인터페이스정의서 작성", "테스트설계서 만들어줘"
+  트리거: "SI 산출물 생성", "발주처 산출물", "인터페이스정의서 작성", "테스트설계서 만들어줘", "project document"
 user-invocable: true
 allowed-tools:
   - Read
@@ -17,7 +17,7 @@ allowed-tools:
   - AskUserQuestion
 ---
 
-# /project:doc — 개별 산출물 문서 생성
+# /si-project:project-document — 개별 산출물 문서 생성
 
 발주처 요청 또는 내부 필요 시점에 SI 표준 형식의 문서 한 개를 현재 프로젝트 상태에서 생성한다.
 
@@ -25,8 +25,8 @@ allowed-tools:
 
 ## STEP 0 — 사전 확인 + lessons 참고
 
-현재 디렉토리가 `/project:init`으로 초기화된 프로젝트인지 확인:
-- `CLAUDE.md` 존재 여부 → 없으면 사용자에게 "init이 먼저 필요합니다" 안내 후 중단
+현재 디렉토리가 `/si-project:project-setup`으로 초기화된 프로젝트인지 확인:
+- `CLAUDE.md` 존재 여부 → 없으면 사용자에게 "project-setup이 먼저 필요합니다" 안내 후 중단
 - `docs/` 디렉토리 존재 여부
 
 **lessons.md 참고** (v2.4): `.claude/lessons.md` 존재 시 Read해 컨텍스트로 반영. 자동 기록 없음 — 사용자가 명시 요청 시에만 본 스킬이 추가 가능.
@@ -242,7 +242,7 @@ Grep pattern="^\| interface-requirements" path="<plugin>/reference/doc-catalog.m
 ## 사용 예시
 
 ```
-사용자: /project:doc 인터페이스요구사항정의서
+사용자: /si-project:project-document 인터페이스요구사항정의서
 Claude:
   → reference/doc-catalog.md에서 매칭: interface-requirements.md (01-requirements)
   → templates/01-requirements/interface-requirements.md 로드

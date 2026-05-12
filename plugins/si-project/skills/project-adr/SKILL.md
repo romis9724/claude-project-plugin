@@ -1,10 +1,10 @@
 ---
-name: adr
+name: project-adr
 description: >
-  아키텍처 결정 기록(MADR 형식) 1건을 생성한다. docs/02-architecture/adr/ 디렉토리에 다음 번호로 자동 저장.
+  SI 프로젝트 아키텍처 결정 기록(MADR 형식) 1건을 생성한다. docs/02-architecture/adr/ 디렉토리에 다음 번호로 자동 저장.
   코드·DB·인프라·보안 등 주요 결정 시점에 호출. 결정 근거를 영구 보존해 향후 reverting·재검토 시 컨텍스트 제공.
   입력: 결정 제목(한글 또는 영문 자유). 미입력 시 AskUserQuestion.
-  트리거: "ADR", "아키텍처 결정", "결정 기록", "/project:adr"
+  트리거: "ADR 작성", "아키텍처 결정 기록", "기술 결정 ADR", "project adr"
 user-invocable: true
 allowed-tools:
   - Read
@@ -17,7 +17,7 @@ allowed-tools:
   - AskUserQuestion
 ---
 
-# /project:adr — 아키텍처 결정 기록 (ADR) 생성
+# /si-project:project-adr — 아키텍처 결정 기록 (ADR) 생성
 
 MADR(Markdown Architecture Decision Records) 형식의 결정 기록 1건을 생성한다. 결정 시점에 호출해 근거를 영구 보존.
 
@@ -175,7 +175,7 @@ tags: [{관련 컴포넌트: backend/user-fe/.../db/security}]
 ## 사용 예시
 
 ```
-사용자: /project:adr "PostgreSQL을 RDB로 채택"
+사용자: /si-project:project-adr "PostgreSQL을 RDB로 채택"
 Claude:
   → ADR 번호: 0002 (기존 0001-stack-selection.md 다음)
   → CLAUDE.md에서 DATA_SENSITIVITY=금융정보 확인

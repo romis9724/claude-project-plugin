@@ -1,6 +1,6 @@
-# init STEP 3 — 핵심 문서 7개 작성 가이드
+# project-setup STEP 3 — 핵심 문서 7개 작성 가이드
 
-본 파일은 `/project:init` STEP 3에서 7개 핵심 문서를 생성할 때 사용하는 섹션 구조·표 컬럼·다이어그램 지침. 각 문서는 마커로 감싸 있어 Grep으로 위치 잡고 Read offset/limit로 부분 로드 가능.
+본 파일은 `/si-project:project-setup` STEP 3에서 7개 핵심 문서를 생성할 때 사용하는 섹션 구조·표 컬럼·다이어그램 지침. 각 문서는 마커로 감싸 있어 Grep으로 위치 잡고 Read offset/limit로 부분 로드 가능.
 
 **공통 생성 규칙**:
 - YAML 프론트매터 포함 (`title`, `project`, `version: 0.1`, `status: 초안`, `date`, `owner`)

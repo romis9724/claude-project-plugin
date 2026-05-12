@@ -1,6 +1,6 @@
 # Stack → Bash 권한 매핑
 
-`/project:init` STEP 5에서 `settings-template.json`의 `permissions.allow` 배열에 추가할 Bash 명령 권한들. STACK_BACKEND/STACK_USER_FE/STACK_ADMIN_FE/STACK_MOBILE/HARNESS 응답에 따라 합집합으로 추가.
+`/si-project:project-setup` STEP 5에서 `settings-template.json`의 `permissions.allow` 배열에 추가할 Bash 명령 권한들. STACK_BACKEND/STACK_USER_FE/STACK_ADMIN_FE/STACK_MOBILE/HARNESS 응답에 따라 합집합으로 추가.
 
 ---
 

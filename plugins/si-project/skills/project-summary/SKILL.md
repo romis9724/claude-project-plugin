@@ -1,9 +1,9 @@
 ---
-name: status
+name: project-summary
 description: >
-  현재 프로젝트의 진행 현황과 오늘·이번 주 권장 액션을 30줄 이하로 요약한다.
+  현재 SI 프로젝트의 진행 현황과 오늘·이번 주 권장 액션을 30줄 이하로 요약한다.
   세션 재진입·일감 파악·납기 추적 시 사용. 쓰기 작업 없음(읽기 전용).
-  트리거: "현황", "오늘 할 일", "이번 주", "프로젝트 상태", "어디까지 했지", "이어서", "session resume", "status"
+  트리거: "SI 프로젝트 현황", "오늘 할 일", "이번 주 일감", "프로젝트 요약", "어디까지 했지", "project summary"
 user-invocable: true
 allowed-tools:
   - Read
@@ -16,7 +16,7 @@ allowed-tools:
   - Bash(Get-ChildItem *)
 ---
 
-# /project:status — 프로젝트 현황·오늘 할 일 요약
+# /si-project:project-summary — 프로젝트 현황·오늘 할 일 요약
 
 새 세션 진입·일감 파악 시점에 현재 프로젝트의 상태를 빠르게 파악한다. **읽기 전용** — 파일을 생성·수정하지 않는다.
 
@@ -29,7 +29,7 @@ allowed-tools:
 
 ## STEP 0 — 사전 확인 + lessons 참고
 
-1. `CLAUDE.md` 존재 여부 → 없으면 "이 디렉토리는 /project:init으로 초기화되지 않았습니다" 안내 후 중단
+1. `CLAUDE.md` 존재 여부 → 없으면 "이 디렉토리는 /si-project:project-setup으로 초기화되지 않았습니다" 안내 후 중단
 2. `.claude/lessons.md` 존재 시 Read → 1줄 압축해 출력 말미 "참고 lesson N건"으로 노출 (없으면 스킵)
 
 ---
@@ -106,7 +106,7 @@ git이 초기화되지 않은 경우 git 관련 단계는 스킵 (`fatal: not a 
 ## 사용 예시
 
 ```
-사용자: /project:status
+사용자: /si-project:project-summary
 Claude:
   → CLAUDE.md, project-context.json, CHANGELOG.md(부분), git log 수집
   → 현재 마일스톤: 01-requirements (docs/01-requirements/ 4건 발견)
@@ -116,6 +116,6 @@ Claude:
 ```
 사용자: 오늘 할 일?
 Claude:
-  → /project:status 트리거
+  → /si-project:project-summary 트리거
   → "다음 권장 액션" 섹션을 강조해 출력
 ```

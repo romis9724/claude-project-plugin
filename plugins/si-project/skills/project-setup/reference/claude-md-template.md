@@ -22,7 +22,7 @@
 | 데이터 민감도 | {DATA_SENSITIVITY} |
 | 적용 규제 | {COMPLIANCE} |
 
-> 발주처·계약·MM·검수·SLA 등 행정 정보는 `.claude/project-context.json`에 별도 저장됨 (첫 `/project:doc` 또는 `/project:bundle` 호출 시 자동 수집).
+> 발주처·계약·MM·검수·SLA 등 행정 정보는 `.claude/project-context.json`에 별도 저장됨 (첫 `/si-project:project-document` 또는 `/si-project:project-milestone` 호출 시 자동 수집).
 
 ## 디렉토리 구조
 
@@ -174,18 +174,18 @@ docs/           — 프로젝트 문서 (SI 표준 8단계)
 
 발주처 요구·내부 마일스톤 시점에 다음 스킬로 산출물을 생성한다.
 
-- **개별 문서 생성**: `/project:doc <문서명>`
-  - 예: `/project:doc 인터페이스요구사항정의서`
+- **개별 문서 생성**: `/si-project:project-document <문서명>`
+  - 예: `/si-project:project-document 인터페이스요구사항정의서`
   - 한글 정식 명칭 또는 영문 파일명(`-` 없는 형태) 모두 사용 가능
 
-- **마일스톤 번들 생성**: `/project:bundle <마일스톤>`
-  - 예: `/project:bundle 01-requirements`
+- **마일스톤 번들 생성**: `/si-project:project-milestone <마일스톤>`
+  - 예: `/si-project:project-milestone 01-requirements`
   - 해당 마일스톤 필수 문서 일괄 생성 + 문서간 일관성 점검
 
-- **프로젝트 현황 요약**: `/project:status`
+- **프로젝트 현황 요약**: `/si-project:project-summary`
   - 30줄 이하 5섹션 요약 (프로젝트·마일스톤·최근 변경·완료 산출물·권장 액션)
 
-- **아키텍처 결정 기록**: `/project:adr <결정 제목>`
+- **아키텍처 결정 기록**: `/si-project:project-adr <결정 제목>`
   - MADR 형식. `docs/02-architecture/adr/NNNN-{slug}.md` 자동 저장
 
 - **사용 가능 문서 카탈로그**: 플러그인의 `reference/doc-catalog.md` (총 106개)
@@ -196,8 +196,8 @@ docs/           — 프로젝트 문서 (SI 표준 8단계)
 
 | 사용자 발화 예시 | 추천 스킬 |
 |----------------|----------|
-| "X 문서 만들어줘", "X 정의서 작성" | `/project:doc X` |
-| "요구분석 산출물 정리", "X 단계 납품물" | `/project:bundle X` |
-| "현황", "오늘 할 일", "어디까지 했지" | `/project:status` |
-| "X 결정 ADR로 남겨줘", "아키텍처 결정 기록" | `/project:adr X` |
-| "전체 다시 만들어줘", "처음부터" | `/project:init` |
+| "X 문서 만들어줘", "X 정의서 작성" | `/si-project:project-document X` |
+| "요구분석 산출물 정리", "X 단계 납품물" | `/si-project:project-milestone X` |
+| "현황", "오늘 할 일", "어디까지 했지" | `/si-project:project-summary` |
+| "X 결정 ADR로 남겨줘", "아키텍처 결정 기록" | `/si-project:project-adr X` |
+| "전체 다시 만들어줘", "처음부터" | `/si-project:project-setup` |

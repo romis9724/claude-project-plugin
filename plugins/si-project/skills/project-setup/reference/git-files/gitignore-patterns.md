@@ -1,6 +1,6 @@
 # .gitignore 패턴 풀
 
-`/project:init` STEP 2.5-2가 본 파일에서 컴포넌트별 패턴을 합집합으로 추출해 프로젝트 루트의 `.gitignore`로 작성. 마커 기반으로 Grep + Read 가능.
+`/si-project:project-setup` STEP 2.5-2가 본 파일에서 컴포넌트별 패턴을 합집합으로 추출해 프로젝트 루트의 `.gitignore`로 작성. 마커 기반으로 Grep + Read 가능.
 
 ---
 
