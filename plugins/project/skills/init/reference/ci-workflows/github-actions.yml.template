@@ -1,0 +1,98 @@
+# init이 자동 생성. 도구·버전은 사용 stack에 맞게 사용자가 조정 필요.
+# 본 템플릿은 GitHub Actions 한정. 다른 HARNESS는 본 init STEP에서 생성하지 않음.
+
+name: CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  # ─── Backend ─── (STACK_BACKEND_USE=있음일 때만)
+  backend:
+    if: ${{ hashFiles('backend/**') != '' }}
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      # STACK_BACKEND 기반 setup (Python/Java/Node 등 자동 선택):
+      # Python 예시
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.12'}
+      - run: pip install -r requirements.txt
+      - run: ruff check .                                    # LINTER_BACKEND
+      - run: pytest --cov=. --cov-report=xml                 # TEST_UNIT_BACKEND + COVERAGE_TARGET 검증
+      # Java/Gradle 예시 (Python 대신)
+      # - uses: actions/setup-java@v4
+      #   with: {distribution: 'temurin', java-version: '21'}
+      # - run: ./gradlew check
+      # - run: ./gradlew test jacocoTestReport
+      # Node.js/NestJS 예시
+      # - uses: actions/setup-node@v4
+      #   with: {node-version: '20'}
+      # - run: npm ci
+      # - run: npm run lint
+      # - run: npm test -- --coverage
+      # Go 예시
+      # - uses: actions/setup-go@v5
+      #   with: {go-version: '1.22'}
+      # - run: golangci-lint run
+      # - run: go test ./... -cover
+      # .NET 예시
+      # - uses: actions/setup-dotnet@v4
+      #   with: {dotnet-version: '8.0'}
+      # - run: dotnet format --verify-no-changes
+      # - run: dotnet test --collect:"XPlat Code Coverage"
+
+  # ─── User FE ─── (STACK_USER_FE_USE=있음일 때만)
+  user-fe:
+    if: ${{ hashFiles('user-fe/**') != '' }}
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: user-fe
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: '20'}
+      - run: npm ci
+      - run: npm run lint                                    # LINTER_USER_FE
+      - run: npm test -- --coverage                          # TEST_UNIT_USER_FE
+
+  # ─── Admin FE ─── (STACK_ADMIN_FE_MODE == separate일 때만)
+  # admin-fe:
+  #   (위 user-fe와 동일 구조, working-directory만 admin-fe로)
+
+  # ─── Mobile ─── (STACK_MOBILE_TYPE != none일 때만)
+  # mobile:
+  #   runs-on: macos-latest (iOS 포함 시) 또는 ubuntu-latest
+  #   Flutter 예시: flutter pub get && flutter analyze && flutter test
+  #   React Native 예시: cd mobile && npm ci && npm test
+  #   iOS 네이티브: xcodebuild test
+  #   Android 네이티브: cd mobile/android && ./gradlew test
+
+  # ─── 보안 스캔 (항상) ────────────────────────────────────
+  security:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: {fetch-depth: 0}
+      - uses: gitleaks/gitleaks-action@v2                    # secret 스캔 (pre-commit과 이중)
+      # SAST (STATIC_SAST 응답 기반):
+      # - uses: github/codeql-action/init@v3 (CodeQL 선택 시)
+      # - uses: github/codeql-action/analyze@v3
+      # SCA (STATIC_SCA):
+      # - uses: snyk/actions/python@master (Snyk 선택 시)
+      # 이미지 스캔 (STATIC_IMAGE, INFRA가 컨테이너 기반일 때):
+      # - uses: aquasecurity/trivy-action@master
+
+  # ─── Quality Gate (선택 — QUALITY_GATE=Pass 필수일 때) ───
+  # quality-gate:
+  #   needs: [backend, user-fe, security]
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - run: echo "All required jobs passed"

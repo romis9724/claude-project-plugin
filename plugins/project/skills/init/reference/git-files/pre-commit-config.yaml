@@ -1,0 +1,57 @@
+# Pre-commit hooks — secret 스캔 + 기본 위생 + 컴포넌트별 lint
+# 1회 설치: pip install pre-commit && pre-commit install
+
+repos:
+  # ─── 공통 위생 ───────────────────────────────────────────
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.6.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-json
+      - id: check-added-large-files
+        args: ['--maxkb=1024']
+      - id: detect-private-key
+      - id: no-commit-to-branch
+        args: ['--branch', 'main', '--branch', 'master', '--branch', 'develop']
+
+  # ─── Secret 스캔 (필수) ─────────────────────────────────
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.18.4
+    hooks:
+      - id: gitleaks
+
+# ─── 컴포넌트별 lint (Q5-A LINTER_* 응답에 따라 조건부 추가) ───
+#
+# Backend Python (LINTER_BACKEND에 ruff/black 포함 시)
+#  - repo: https://github.com/astral-sh/ruff-pre-commit
+#    rev: v0.4.10
+#    hooks:
+#      - id: ruff
+#        files: ^backend/
+#      - id: ruff-format
+#        files: ^backend/
+#
+# User FE / Admin FE Node (LINTER에 eslint 포함 시)
+#  - repo: local
+#    hooks:
+#      - id: eslint-user-fe
+#        name: ESLint (user-fe)
+#        entry: bash -c 'cd user-fe && npx eslint'
+#        language: system
+#        files: ^user-fe/.*\.(ts|tsx|js|jsx)$
+#        pass_filenames: false
+#
+# Java Backend (LINTER에 checkstyle/spotless 포함 시)
+#  - repo: local
+#    hooks:
+#      - id: spotless-backend
+#        name: Spotless (backend)
+#        entry: bash -c 'cd backend && ./gradlew spotlessCheck'
+#        language: system
+#        files: ^backend/.*\.java$
+#        pass_filenames: false
+#
+# init 생성 시 사용 컴포넌트(Q2)와 선택 린터(Q5-A)에 따라 해당 블록만 활성화.
+# gitleaks는 항상 포함 (secret 스캔은 무조건).
