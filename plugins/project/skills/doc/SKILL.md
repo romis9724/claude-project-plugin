@@ -23,32 +23,50 @@ allowed-tools:
 
 ---
 
-## STEP 0 — 사전 확인
+## STEP 0 — 사전 확인 + lessons 참고
 
 현재 디렉토리가 `/project:init`으로 초기화된 프로젝트인지 확인:
 - `CLAUDE.md` 존재 여부 → 없으면 사용자에게 "init이 먼저 필요합니다" 안내 후 중단
 - `docs/` 디렉토리 존재 여부
 
+**lessons.md 참고** (v2.4): `.claude/lessons.md` 존재 시 Read해 컨텍스트로 반영. 자동 기록 없음 — 사용자가 명시 요청 시에만 본 스킬이 추가 가능.
+
 ---
 
-## STEP 1 — 입력 파싱
+## STEP 1 — 입력 파싱 (Grep 기반 lazy 매칭)
 
 사용자가 제공한 문서명을 식별:
 - 한글 입력(예: `인터페이스요구사항정의서`) → 카탈로그에서 영문 파일명 매칭
 - 영문 입력(예: `interface-requirements`) → 직접 매칭
 - 누락 시 AskUserQuestion으로 사용자에게 어떤 문서를 생성할지 확인
 
-**카탈로그 위치**: 플러그인 디렉토리의 `reference/doc-catalog.md` (Read로 읽어 매칭)
+**카탈로그 접근 (v2.4 lazy 패턴)**: 전체 Read 금지. Grep으로 1줄만 추출.
+
+```
+# 한글 입력 매칭 예
+Grep pattern="인터페이스요구사항" path="<plugin>/reference/doc-catalog.md" output_mode="content" -C=0
+# 결과: | interface-requirements.md | 인터페이스요구사항정의서 | 권장 | ... |
+# → 영문 파일명 + 마일스톤(헤더 추정) 확보
+
+# 영문 입력 매칭 예
+Grep pattern="^\| interface-requirements" path="<plugin>/reference/doc-catalog.md" output_mode="content"
+```
+
+매칭 후 해당 마일스톤을 결정. 마일스톤은 doc-catalog.md의 섹션 헤더(예: `## 01-requirements`)로 추적. Grep 1번 더로 헤더 위치 확인.
 
 ---
 
-## STEP 2 — 템플릿·가이드 로드
+## STEP 2 — 템플릿·가이드 로드 (lazy, 마커 기반)
 
 식별된 문서에 대해:
 1. **템플릿 로드**: `{플러그인_경로}/templates/{milestone}/{file}.md` 읽기
-   - 플러그인 경로 예: `~/.claude/plugins/marketplaces/claude-plugins-official/plugins/project/`
-2. **작성 가이드 로드**: `{플러그인_경로}/reference/methodology.md`에서 해당 문서 섹션만 추출
-3. **카탈로그 매핑 로드**: `{플러그인_경로}/reference/doc-catalog.md`의 해당 문서 행에서 "마일스톤" 확인
+   - 플러그인 경로 예: `~/.claude/plugins/marketplaces/team-tools/plugins/project/`
+2. **작성 가이드 로드 (v2.4 lazy 패턴)**: `{플러그인_경로}/reference/methodology.md` **전체 읽지 말 것**.
+   - `Grep pattern="<!-- DOC: {file_stem} -->" -n` → 시작 라인 N
+   - `Grep pattern="<!-- /DOC: {file_stem} -->" -n` → 종료 라인 M
+   - `Read offset=N, limit=(M-N+1)` → 해당 섹션만 (~20-40줄) 로드
+   - 마커가 없는 문서(methodology.md 3.X에 없는 것)는 일반 작성 원칙(섹션 4 이후)만 참조
+3. **카탈로그 매핑은 이미 STEP 1에서 확보됨** — 중복 Read 금지
 
 ---
 
@@ -195,6 +213,11 @@ allowed-tools:
 - 이미 존재 시 AskUserQuestion으로 사용자 확인 (덮어쓰기/스킵/이름 변경/병합)
 
 생성 후 컨텍스트 파일 업데이트 (STEP 3에서 수집된 정보 + 본 문서 작성 중 알게 된 새 정보).
+
+**CHANGELOG.md 1줄 append (v2.4)**:
+- 파일 존재 시 `## [Unreleased]` 아래 `### Added` 섹션에 `- {YYYY-MM-DD} doc: {한글 문서명} 생성 (docs/{milestone}/{file}.md)` 1줄 추가
+- 덮어쓰기·병합 케이스는 `### Changed`에 기록
+- 스킵 케이스는 기록 안 함
 
 생성 보고 출력:
 ```

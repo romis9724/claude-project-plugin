@@ -408,7 +408,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
-- 프로젝트 초기 구조 (project plugin v2.3 init)
+- {YYYY-MM-DD} init: 프로젝트 초기화 (project plugin v2.4)
 
 ### Changed
 
@@ -417,7 +417,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Security
 ```
 
-### 2.5-7. `scripts/git-setup.md` — 사람이 1회 실행할 원격 정책 가이드
+> 이후 `/project:doc` / `/project:bundle`이 종료 시 본 파일 `### Added` 또는 `### Changed` 섹션에 1줄씩 append한다 (v2.4).
+
+### 2.5-7. `.claude/lessons.md` — 팀 공유 lesson 기록 (v2.4 신규)
+
+본 파일은 **사용자가 직접 큐레이션**하는 lesson 저장소. AI가 자동 기록하지 않는다(편향 누적 방지).
+
+```markdown
+# Project Lessons (팀 공유)
+
+> 본 파일은 팀에 공유 가치가 있는 lesson만 기록한다. 개인 디버깅 메모 금지.
+> 형식: ## YYYY-MM-DD {제목} → 증상 / 원인 / 대응 3줄 단위.
+> doc / bundle / status 스킬이 STEP 0에서 본 파일을 자동 참고한다.
+
+<!-- 예시 (실제 추가 시 제거):
+## 2026-05-12 PowerShell 인코딩 깨짐
+- 증상: 한글 파일명 git mv 시 깨짐
+- 원인: chcp 949 환경에서 UTF-8 파일명 처리
+- 대응: 작업 전 `chcp 65001` 실행
+-->
+```
+
+> **gitignore 미포함** — 팀 공유 목적이므로 commit 대상. 본 파일에 개인 디버깅 메모를 쓰면 노이즈가 누적되므로 헤더 규칙을 지킬 것.
+
+### 2.5-8. `scripts/git-setup.md` — 사람이 1회 실행할 원격 정책 가이드
 
 ```markdown
 # Git 원격 정책 셋업 가이드
@@ -474,7 +497,7 @@ git commit -m "chore(meta): enable Git LFS for mobile binaries"
 \`\`\`
 ```
 
-### 2.5-8. `GIT_FLOW_STYLE`을 CLAUDE.md에 반영
+### 2.5-9. `GIT_FLOW_STYLE`을 CLAUDE.md에 반영
 
 CLAUDE.md "Git·협업 규약" 섹션(STEP 4에서 생성)에 `GIT_FLOW_STYLE` 값 박힘.
 
@@ -582,7 +605,13 @@ DB가 없음이면 이 파일 생성 건너뜀.
 
 ---
 
-## STEP 4 — CLAUDE.md 생성 (루트 디렉토리)
+## STEP 4 — CLAUDE.md 생성 (루트 디렉토리, v2.4 슬림 모드)
+
+**v2.4 원칙 (lazy loading)**: CLAUDE.md는 매 세션 자동 풀로딩되므로 **간결**해야 한다. 상세는 `docs/`로 위임. 길이 가이드: **≤ 150줄**.
+
+- **CLAUDE.md에 유지**: 프로젝트 한 줄·기술 스택 4슬롯 요약·디렉토리 구조 인덱스·Git·협업 규약 핵심·코드 컨벤션·테스트·보안 정책·절대 금지·산출물 생성 안내
+- **`docs/`로 위임**: 상세 아키텍처 도형, 마일스톤별 전체 산출물 목록, 이해관계자 명부, 도구 버전 핀, 환경별 설정, FAQ
+- CLAUDE.md에는 "상세는 [docs/02-architecture/...](docs/02-architecture/software-architecture.md) 참조" 형태의 링크만 둘 것
 
 아래 구조를 STEP 1 답변으로 채워 생성한다:
 
@@ -1021,9 +1050,11 @@ cd mobile && flutter create .                # 또는 npx react-native init
 - [CHANGELOG](CHANGELOG.md)
 ```
 
-### `.gitignore`, `.gitattributes`, `.github/PULL_REQUEST_TEMPLATE.md`, `.github/CODEOWNERS`, `CHANGELOG.md`, `scripts/git-setup.md`
+### `.gitignore`, `.gitattributes`, `.github/PULL_REQUEST_TEMPLATE.md`, `.github/CODEOWNERS`, `CHANGELOG.md`, `scripts/git-setup.md`, `.claude/lessons.md`
 
 STEP 2.5에서 정의한 내용대로 생성. `.gitignore`는 사용 컴포넌트(Q2 STACK_*_USE)에 해당하는 섹션만 포함.
+
+> `.claude/lessons.md`는 STEP 2.5-7 형식으로 빈 파일 생성. **`.gitignore`에 포함하지 않음** (팀 공유 목적).
 
 ---
 
@@ -1034,7 +1065,7 @@ STEP 0~7의 모든 파일 생성이 끝난 직후 실행:
 ```bash
 git init -b main                              # 또는 git init && git symbolic-ref HEAD refs/heads/main
 git add -A
-git commit -m "chore(meta): 프로젝트 초기화 (project plugin v2.3)
+git commit -m "chore(meta): 프로젝트 초기화 (project plugin v2.4)
 
 - 사용 컴포넌트: {MONOREPO_LAYOUT}
 - Branch 전략: {GIT_FLOW_STYLE}
@@ -1077,3 +1108,5 @@ git branch develop
 - [ ] `scripts/git-setup.md` 따라 branch protection / CODEOWNERS / Required checks 적용
 - [ ] CI 파이프라인 초기 설정 (린터·테스트·SAST·SCA·이미지 스캔)
 - [ ] (Mobile 있으면) `git lfs install` + LFS track 활성화
+- [ ] `/project:status` 시범 실행 — 30줄 요약이 정상 출력되는지 확인
+- [ ] (선택) `.claude/lessons.md`에 팀 lesson 1건 추가 — 사용 패턴 익히기용

@@ -11,6 +11,21 @@ version: 1.0
 - `doc` 스킬: 사용자 입력 한글명/영문명을 본 카탈로그에서 매칭 → 템플릿 경로 확정
 - `bundle` 스킬: 입력 마일스톤의 `필수도=필수` 항목 모두 일괄 생성
 
+### Lazy-load 접근 패턴 (v2.4)
+
+본 파일 12KB. **전체 Read 금지**. 다음 패턴으로 접근:
+
+- **doc 스킬 (단건 매칭)**: `Grep pattern="<사용자입력>" output_mode="content" -C=1`
+  - 한글 입력은 그대로, 영문 입력은 `.md` 포함해 매칭
+  - 결과 1줄에 영문 파일명·한글명·필수도·마일스톤 행이 잡힘
+- **bundle 스킬 (마일스톤 일괄)**: 섹션 헤더 위치만 확보 후 부분 Read
+  - `Grep pattern="^## {milestone}"` → 시작 라인 N
+  - 다음 섹션 시작 라인 또는 `## 합계` 라인 → 종료 라인 M
+  - `Read offset=N, limit=(M-N+1)` → 해당 마일스톤 ~25줄만 로드
+- **마일스톤 섹션 라인 가이드** (변경 시 갱신 필요):
+  - 00-kickoff ≈ line 22~, 01-requirements ≈ 39~, 02-architecture ≈ 55~, 03-design ≈ 73~,
+  - 04-implementation ≈ 101~, 05-testing ≈ 114~, 06-management ≈ 123~, 07-delivery ≈ 147~
+
 ## 필수도 기준
 
 - **필수**: 발주처 표준 납품물. 대부분의 SI 프로젝트에서 요구됨

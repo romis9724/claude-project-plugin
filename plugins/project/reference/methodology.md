@@ -78,6 +78,18 @@ version: 1.0
 
 `doc` 스킬이 각 문서 생성 시 본 절을 참조해 섹션 구조·표 컬럼·다이어그램을 결정한다.
 
+> **Lazy-load 패턴 (v2.4)**: 전체 섹션을 읽지 말 것. 필요한 문서의 마커만 Grep으로 위치 잡고 그 범위만 Read.
+>
+> ```
+> # 예: doc 스킬이 db-design.md 생성 시
+> Grep pattern="<!-- DOC: db-design -->"   → 시작 라인 N 확보
+> Grep pattern="<!-- /DOC: db-design -->"  → 종료 라인 M 확보
+> Read offset=N, limit=(M-N+1)             → 해당 섹션만 로드 (~20-40줄)
+> ```
+>
+> 카탈로그 외 문서는 일반 작성 원칙(섹션 4 이후)을 참조한다.
+
+<!-- DOC: project-charter -->
 ### 3.1 project-charter.md (프로젝트정의서)
 
 **필수 섹션**:
@@ -92,7 +104,9 @@ version: 1.0
 
 **추출 정보**: CLAUDE.md의 KR_NAME, PURPOSE, PERIOD, STACK, TEAM
 **6관점 점검**: PMO(범위·일정 명시), 보안(보안 요건 반영)
+<!-- /DOC: project-charter -->
 
+<!-- DOC: requirements -->
 ### 3.2 requirements.md (요구사항기술서)
 
 **필수 섹션**:
@@ -108,7 +122,9 @@ version: 1.0
 - 외부 API 의존성 SLA
 
 **6관점 점검**: PM(추적성), 아키텍처(NFR), 보안(개인정보·인증), DBA(데이터 요구)
+<!-- /DOC: requirements -->
 
+<!-- DOC: system-vision -->
 ### 3.3 system-vision.md (시스템비전기술서)
 
 **필수 섹션**:
@@ -119,7 +135,9 @@ version: 1.0
 - KPI 표 (지표·목표값·측정방법)
 
 **추출 정보**: PURPOSE, SYSTEM_TYPE, 사용자 페르소나
+<!-- /DOC: system-vision -->
 
+<!-- DOC: software-architecture -->
 ### 3.4 software-architecture.md (소프트웨어아키텍처기술서)
 
 **필수 섹션**:
@@ -133,7 +151,9 @@ version: 1.0
 
 **다이어그램**: `graph LR` 또는 `flowchart TB`
 **6관점 점검**: 아키텍처(스타일·확장성), 보안(인증·암호화 경로), 하네스(배포 단위)
+<!-- /DOC: software-architecture -->
 
+<!-- DOC: security-definition -->
 ### 3.5 security-definition.md (보안정의서)
 
 **필수 섹션**:
@@ -146,7 +166,9 @@ version: 1.0
 - 취약점 관리 SLA
 
 **6관점 점검**: 보안 전체, PMO(컴플라이언스), DBA(민감 데이터)
+<!-- /DOC: security-definition -->
 
+<!-- DOC: db-design -->
 ### 3.6 db-design.md (데이터베이스설계서)
 
 **필수 섹션**:
@@ -159,7 +181,9 @@ version: 1.0
 
 **다이어그램**: `erDiagram`
 **6관점 점검**: DBA 전체, 보안(암호화), 아키텍처(읽기/쓰기 분리)
+<!-- /DOC: db-design -->
 
+<!-- DOC: test-plan -->
 ### 3.7 test-plan.md (테스트계획서)
 
 **필수 섹션**:
@@ -171,7 +195,9 @@ version: 1.0
 - AI 모델 평가 기준 (LLM 사용 시)
 
 **6관점 점검**: 보안(OWASP 케이스), 하네스(CI 통합)
+<!-- /DOC: test-plan -->
 
+<!-- DOC: component-spec -->
 ### 3.8 component-spec.md (컴포넌트명세서)
 
 **필수 섹션**:
@@ -179,7 +205,9 @@ version: 1.0
 - 인터페이스 명세 (메서드·입출력·예외)
 - 에러 처리 표 (코드·메시지·처리)
 - 의존성 그래프
+<!-- /DOC: component-spec -->
 
+<!-- DOC: user-manual -->
 ### 3.9 user-manual.md (사용자지침서)
 
 **필수 섹션**:
@@ -189,7 +217,9 @@ version: 1.0
 - 자주 묻는 질문(FAQ)
 - 문제 해결
 - 연락처
+<!-- /DOC: user-manual -->
 
+<!-- DOC: project-closure-report -->
 ### 3.10 project-closure-report.md (프로젝트완료보고서)
 
 **필수 섹션**:
@@ -200,28 +230,36 @@ version: 1.0
 - 주요 이슈·해결
 - 교훈(Lessons Learned)
 - 미해결 항목·인계 사항
+<!-- /DOC: project-closure-report -->
 
+<!-- DOC: risk-register -->
 ### 3.11 risk-register.md (위험분석서)
 
 **필수 섹션**:
 - 위험요소 목록 표 (ID·이름·정의·구분: 기술/요구/관리/비즈니스)
 - 위험요소/유스케이스 관계표
 - 위험관리표 (위험별: 우선순위·발생확률·영향·발견자·해결방안·비상대책·상태)
+<!-- /DOC: risk-register -->
 
+<!-- DOC: actors -->
 ### 3.12 actors.md (사용자정의서)
 
 **필수 섹션**:
 - 행위자 목록 표 (ID·이름·역할·관계 시스템)
 - 페르소나 (대표 2~3명)
 - 외부 시스템 행위자
+<!-- /DOC: actors -->
 
+<!-- DOC: process-hierarchy -->
 ### 3.13 process-hierarchy.md (업무프로세스계층모형기술서)
 
 **필수 섹션**:
 - 프로세스 계층도 (대분류 > 중분류 > 소분류)
 - 프로세스별 설명
 - AS-IS / TO-BE 비교
+<!-- /DOC: process-hierarchy -->
 
+<!-- DOC: system-architecture -->
 ### 3.14 system-architecture.md (시스템아키텍처정의서)
 
 **필수 섹션**:
@@ -229,7 +267,9 @@ version: 1.0
 - Mermaid 배포 다이어그램
 - 환경 표 (dev/staging/prod)
 - 확장 전략
+<!-- /DOC: system-architecture -->
 
+<!-- DOC: change-request -->
 ### 3.15 change-request.md (변경요청기술서)
 
 **필수 섹션**:
@@ -238,7 +278,9 @@ version: 1.0
 - 변경 근거
 - 영향 분석 (코드·문서·테스트·일정)
 - 승인 체크리스트 (PM·아키텍트·DBA·보안)
+<!-- /DOC: change-request -->
 
+<!-- DOC: system-installation-report -->
 ### 3.16 system-installation-report.md (시스템설치보고서)
 
 **필수 섹션**:
@@ -247,7 +289,9 @@ version: 1.0
 - 설치 결과 (성공·실패 항목)
 - 설치 검증 (헬스 체크 결과)
 - 이슈 및 해결
+<!-- /DOC: system-installation-report -->
 
+<!-- DOC: data-migration-report -->
 ### 3.17 data-migration-report.md (데이터전환보고서)
 
 **필수 섹션**:
@@ -256,7 +300,9 @@ version: 1.0
 - 검증 결과 (건수·정합성)
 - 이슈 및 해결
 - 롤백 방안
+<!-- /DOC: data-migration-report -->
 
+<!-- DOC: user-training-plan -->
 ### 3.18 user-training-plan.md (사용자교육계획서)
 
 **필수 섹션**:
@@ -265,7 +311,9 @@ version: 1.0
 - 교육 일정·장소
 - 교육 자료·실습
 - 평가 방법
+<!-- /DOC: user-training-plan -->
 
+<!-- DOC: config-management -->
 ### 3.19 config-management.md (형상관리절차서)
 
 **필수 섹션**:
@@ -274,7 +322,9 @@ version: 1.0
 - 버전 관리 (SemVer)
 - CI/CD 파이프라인
 - 환경별 설정 관리
+<!-- /DOC: config-management -->
 
+<!-- DOC: quality-plan -->
 ### 3.20 quality-plan.md (품질관리계획서)
 
 **필수 섹션**:
@@ -283,6 +333,7 @@ version: 1.0
 - 리뷰 프로세스
 - 정적 분석 도구
 - SLA 표
+<!-- /DOC: quality-plan -->
 
 ---
 

@@ -24,10 +24,18 @@ allowed-tools:
 
 ---
 
-## STEP 0 — 사전 확인
+## STEP 0 — 사전 확인 + lessons 참고
 
 - `CLAUDE.md` 존재 여부 → 없으면 `/project:init` 안내 후 중단
 - 사용자 입력 마일스톤 식별
+- **lessons.md 참고 (v2.4)**: `.claude/lessons.md` 존재 시 Read해 컨텍스트로 반영. 일관성 점검 시 lesson에 기록된 과거 불일치 패턴이 있으면 우선 검증.
+
+### 설계 결정: subagent 미도입 (v2.4 검토 후 확정)
+
+본 스킬은 의도적으로 **단일 conversation 순차 생성**을 유지한다.
+- 문서간 일관성 점검(STEP 5)이 본 스킬의 핵심 가치
+- subagent 병렬 실행 시 각 agent가 다른 문서의 출력을 보지 못해 용어·요구사항 ID·이해관계자 명칭 정합성이 깨짐
+- 속도 < 정합성 — SI 산출물 표준에 맞는 선택
 
 **마일스톤 매핑**:
 | 입력 | 정규화 |
@@ -43,10 +51,24 @@ allowed-tools:
 
 ---
 
-## STEP 1 — 필수 문서 목록 추출
+## STEP 1 — 필수 문서 목록 추출 (lazy, 섹션 단위)
 
-`{플러그인_경로}/reference/doc-catalog.md` 읽고:
-- 해당 마일스톤의 모든 문서 추출
+`{플러그인_경로}/reference/doc-catalog.md` **전체 Read 금지** (v2.4).
+
+```
+# 1단계: 섹션 헤더 위치 확인
+Grep pattern="^## {milestone}" -n
+# → 시작 라인 N 확보 (예: ## 01-requirements → line 39)
+
+# 2단계: 다음 섹션 헤더로 끝 위치 확보
+Grep pattern="^## [0-9]" -n     # 모든 섹션 헤더 위치
+# → milestone 다음 헤더 라인 M, 또는 "## 합계" 라인
+
+# 3단계: 부분 Read
+Read offset=N, limit=(M-N)
+```
+
+- 해당 마일스톤의 모든 문서 추출 (~10-25줄)
 - `필수도 = 필수` 항목 우선 (필요 시 `권장` 포함 여부 사용자 확인)
 
 TodoWrite로 각 문서를 task로 등록 (진행 추적).
@@ -96,14 +118,20 @@ TodoWrite로 각 문서를 task로 등록 (진행 추적).
 
 ---
 
-## STEP 4 — 일괄 생성
+## STEP 4 — 일괄 생성 (순차, lazy 로드)
 
 각 누락 문서에 대해 `doc` 스킬과 동일한 로직으로 생성:
 1. 템플릿 로드
-2. methodology.md에서 작성 가이드 로드
+2. **methodology.md에서 작성 가이드 (v2.4 마커 기반 lazy 로드)**:
+   - `Grep pattern="<!-- DOC: {file_stem} -->" -n` → 시작 라인 N
+   - `Grep pattern="<!-- /DOC: {file_stem} -->" -n` → 종료 라인 M
+   - `Read offset=N, limit=(M-N+1)` → 해당 섹션만 로드
+   - 마커 없는 문서는 생략
 3. `.claude/project-context.json` + CLAUDE.md + 소스 분석
 4. 생성 (YAML 프론트매터 + 섹션 채움 + TODO 표기)
 5. 저장 + TodoWrite 완료 표시
+
+> 본 STEP은 **순차** 처리. subagent를 띄우지 않는다 (STEP 0 설계 결정 참조).
 
 **일관성을 위한 공통 컨텍스트**:
 - STEP 2에서 수집한 컨텍스트 파일을 모든 문서가 공유 → 발주처명·이해관계자·일정 등이 자동으로 모든 문서에 동일하게 박힘
@@ -138,7 +166,13 @@ methodology.md의 해당 마일스톤 6관점 체크리스트 적용:
 
 ---
 
-## STEP 6 — 완료 보고
+## STEP 6 — 완료 보고 + CHANGELOG 기록
+
+**CHANGELOG.md 1줄 append (v2.4)**:
+- `## [Unreleased]` 아래 `### Added` 섹션에 `- {YYYY-MM-DD} bundle: {milestone-id} N건 생성, 일관성 점검 통과/이슈 M건` 1줄 추가
+- 모든 문서가 스킵이면 기록 안 함
+
+### 보고 형식
 
 ```
 ✅ {{milestone}} 마일스톤 산출물 생성 완료
