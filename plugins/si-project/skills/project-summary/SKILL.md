@@ -46,6 +46,7 @@ allowed-tools:
 | `git log` | `Bash: git log -10 --oneline --decorate` | 최근 커밋 |
 | `git status` | `Bash: git status --short --branch` | 현재 브랜치·미커밋 변경 |
 | `docs/` 디렉토리 | Glob `docs/**/*.md` | 완성된 산출물 목록 (마일스톤별 카운트) |
+| `.claude/inbox.md` (v2.3) | Grep `^- \[ \]` count | 미처리 inbox 항목 수 (없으면 0) |
 
 git이 초기화되지 않은 경우 git 관련 단계는 스킵 (`fatal: not a git repository` 무시).
 
@@ -87,6 +88,7 @@ git이 초기화되지 않은 경우 git 관련 단계는 스킵 (`fatal: not a 
    2. {git status에 미커밋 변경 있으면 "변경사항 커밋"}
    3. {project-context.json 누락 필드 있으면 "행정 정보 보강"}
 
+📥 Inbox: 미처리 N건 (자세히 `/si-project:project-inbox`)
 ℹ️ 참고 lesson: .claude/lessons.md N건 ({날짜 가장 최근 1개 제목})
 ```
 

@@ -117,6 +117,7 @@ scripts/
 | `.github/CODEOWNERS` | `reference/git-files/codeowners` | 사용 컴포넌트 라인만 주석 해제 |
 | `CHANGELOG.md` | `reference/git-files/changelog-init.md` | `{YYYY-MM-DD}`를 오늘 날짜로 치환 |
 | `.claude/lessons.md` | `reference/git-files/lessons-init.md` | 그대로 복사 (gitignore 미포함 — 팀 공유) |
+| `.claude/inbox.md` | `reference/git-files/inbox-init.md` | 그대로 복사 (gitignore 미포함 — 팀 공유 원격 작업 큐, v2.3) |
 | `scripts/git-setup.md` | `reference/git-files/git-setup.md` | `{CODE_REVIEW_POLICY}`/`{LINTER_*}`/`{STATIC_*}`/`{TEST_*}` 치환 |
 | `.pre-commit-config.yaml` | `reference/git-files/pre-commit-config.yaml` | gitleaks 항상 포함. Q5-A LINTER_*에 따라 ruff/eslint/spotless 블록 주석 해제 |
 

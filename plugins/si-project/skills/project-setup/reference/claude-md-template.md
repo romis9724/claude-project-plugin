@@ -209,7 +209,44 @@ docs/           — 프로젝트 문서 (SI 표준 8단계)
   - 읽기 전용, 30줄 이하. 요구사항 산출물의 모호도(`TBD`/`?`/`모호`/`미정`) + 빈 `.env` 슬롯 + `## 미설정 항목` 카운트 → "준비도 점수" 출력
   - 구현 본격 시작 전, 또는 마일스톤 진입 직전에 호출 권장
 
+- **원격 작업 큐 (Inbox)**: `/si-project:project-inbox`
+  - 읽기 전용, 30줄 이하. `.claude/inbox.md` + GitHub Issues(label:si-project-inbox) + project-check 4축 자동 도출을 통합 표시
+  - 새 세션 진입·작업 완료 시점에 호출 권장
+  - 입력 채널: 어디서든 git push로 `.claude/inbox.md`에 추가 또는 GitHub Issues에 라벨 부여
+
 - **사용 가능 문서 카탈로그**: 플러그인의 `reference/doc-catalog.md` (총 106개)
+
+## 원격 작업 큐 (Remote Inbox)
+
+AI agent 작업이 끝났을 때 사용자가 콘솔 앞에 없어도 **다음 할 일을 어디서든 큐잉**할 수 있게 한다.
+
+### 우선 활용 — Anthropic 공식 도구
+- **claude.ai/code (웹)** — 데스크탑·모바일 브라우저에서 Claude Code 세션 직접 실행
+- **Claude Code 데스크탑 앱** (Mac/Windows)
+- **VS Code / JetBrains IDE 확장**
+- **PushNotification** — 작업 완료 시 모바일 푸시 (Claude Code 내장)
+- **CronCreate / Scheduled Tasks** — 주기적 자동 실행 (Claude Code 내장)
+
+### 입력 채널 — 2가지 (`/si-project:project-inbox`로 통합 표시)
+
+**(1) 로컬 `.claude/inbox.md`** — 폐쇄망·오프라인 친화
+- 어디서든 git push로 추가 (모바일 GitHub 앱에서 직접 편집 가능)
+- 형식: `## P0|P1|P2` 헤더 아래 `- [ ] 항목`
+- 처리 완료: `- [ ]` → `- [x]` 마킹 또는 삭제
+
+**(2) GitHub Issues** (label: `si-project-inbox`) — 팀·모바일 친화
+- 모바일 GitHub 앱·웹에서 새 issue 생성, 라벨 부여
+- 처리 완료: `gh issue close <N>` 또는 모바일에서 close
+- gh CLI 미설치 / 폐쇄망 환경에서는 자동 스킵
+
+### 출력 — `/si-project:project-inbox`
+- 새 세션 진입·작업 완료 시점에 호출
+- 로컬 + GitHub Issues + `/si-project:project-check` 자동 도출 항목을 30줄 이하로 통합 표시
+- 다음 추천 액션 1줄 제안
+
+### 절대 금지
+- 본 plugin이 외부 ITS API를 자동 호출해 issue 자동 생성·자동 close 안 함 (사용자 명시 액션만)
+- `.claude/inbox.md`의 `[x]` 항목은 plugin이 자동 삭제 안 함 (사용자 큐레이션)
 
 ## 구현 단계 subagent 권장 패턴
 
@@ -247,4 +284,5 @@ docs/           — 프로젝트 문서 (SI 표준 8단계)
 | "현황", "오늘 할 일", "어디까지 했지" | `/si-project:project-summary` |
 | "X 결정 ADR로 남겨줘", "아키텍처 결정 기록" | `/si-project:project-adr X` |
 | "구현 시작해도 되나", "준비도 점검", "명확도 체크", "모호한 부분 확인" | `/si-project:project-check` |
+| "다음 뭐 할까", "받은 일감", "원격 지시 확인", "inbox" | `/si-project:project-inbox` |
 | "전체 다시 만들어줘", "처음부터" | `/si-project:project-setup` |
