@@ -3,9 +3,10 @@ name: project-setup
 description: >
   AI 에이전트 기반 신규 SI 프로젝트 초기 환경 일괄 설정.
   PMO·PM·아키텍처·DBA·하네스·보안 6개 관점 통합.
-  생성물: CLAUDE.md(≤150줄), .claude/settings.json, .pre-commit-config.yaml, .github/workflows/ci.yml(GHA일 때),
-  핵심 문서 7개, ADR-0001, 산출물 템플릿 5~8개(조건부).
+  생성물: CLAUDE.md(≤150줄, ## 미설정 항목 섹션 포함), .claude/settings.json, .pre-commit-config.yaml,
+  .github/workflows/ci.yml(GHA일 때), 핵심 문서 7개, ADR-0001, 산출물 템플릿 5~8개(조건부).
   추가 산출물은 /si-project:project-document 또는 /si-project:project-milestone으로 필요 시점에 생성.
+  구현 본격 시작 전에는 /si-project:project-check로 명확성 게이트 점검 권장 (v2.1.0+).
   트리거: "SI 프로젝트 셋업", "신규 SI 프로젝트 초기화", "project setup", "SI 프로젝트 환경 구축"
 user-invocable: true
 allowed-tools:
@@ -236,7 +237,7 @@ STEP 0~7 완료 직후 실행 (OS에 맞게 분기):
 ```bash
 git init -b main                              # 또는 git init && git symbolic-ref HEAD refs/heads/main
 git add -A
-git commit -m "chore(meta): 프로젝트 초기화 (si-project plugin v2.0.0)
+git commit -m "chore(meta): 프로젝트 초기화 (si-project plugin v2.1.0)
 
 - 사용 컴포넌트: {MONOREPO_LAYOUT}
 - Branch 전략: {GIT_FLOW_STYLE}
@@ -259,9 +260,17 @@ git commit -m "chore(meta): 프로젝트 초기화 (si-project plugin v2.0.0)
 `ls -R docs/ .claude/ .github/` (또는 `Get-ChildItem -Recurse`).
 
 ### 즉시 작성 권장 문서 (Top 3)
-1. `docs/01-requirements/requirements.md` — 기능/비기능 요구사항 구체화
+1. `docs/01-requirements/requirements.md` — 기능/비기능 요구사항 구체화 (**모든 행에 명확도 등급 표기**)
 2. `docs/02-architecture/software-architecture.md` — 아키텍처 결정 상세화
 3. `docs/02-architecture/security-definition.md` — 보안 위협 모델 구체화
+
+### 다음 단계 안내 (사용자에게 한 줄로 출력)
+
+```
+다음 권장:
+  1) 요구사항 정의 → `/si-project:project-milestone 01-requirements`
+  2) 구현 시작 전 명확성 게이트 → `/si-project:project-check`
+```
 
 ### 스프린트 1 준비 체크리스트
 - [ ] 각 컴포넌트 framework CLI 초기화 완료
