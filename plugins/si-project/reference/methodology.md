@@ -132,6 +132,13 @@ AI 에이전트 작업 시:
 
 **추출 정보**: CLAUDE.md의 KR_NAME, PURPOSE, PERIOD, STACK, TEAM
 **6관점 점검**: PMO(범위·일정 명시), 보안(보안 요건 반영)
+
+**도메인 검토 체크리스트** (작성 후 검토자 subagent가 반영 여부 점검):
+- [ ] sponsor-and-decision-makers: 스폰서·의사결정권자 식별 명시
+- [ ] kpi-measurable: 성공 기준(KPI)이 측정 가능 형태
+- [ ] scope-in-out: 범위 In/Out 양쪽 기술
+- [ ] assumptions-constraints: 가정·제약 검토 흔적
+- [ ] definition-of-done: 종료 조건(Definition of Done) 정의
 <!-- /DOC: project-charter -->
 
 <!-- DOC: requirements -->
@@ -150,6 +157,13 @@ AI 에이전트 작업 시:
 - 외부 API 의존성 SLA
 
 **6관점 점검**: PM(추적성), 아키텍처(NFR), 보안(개인정보·인증), DBA(데이터 요구)
+
+**도메인 검토 체크리스트** (작성 후 검토자 subagent가 반영 여부 점검):
+- [ ] clarity-grade-all-items: FR/NFR 모든 항목 명확도 등급 표기(명확/모호/미정)
+- [ ] ambiguous-undecided-zero: 모호·미정 항목 0건 또는 처리 계획 명시
+- [ ] nfr-quantified: NFR 정량값 보유 (예: 응답 < 500ms, "빠를 것" 금지)
+- [ ] ai-ac-sec-tracks: AI/AC/SEC 분류 트랙 누락 없음
+- [ ] no-id-conflicts: 요구사항 ID 충돌·중복 없음
 <!-- /DOC: requirements -->
 
 <!-- DOC: system-vision -->
@@ -163,6 +177,13 @@ AI 에이전트 작업 시:
 - KPI 표 (지표·목표값·측정방법)
 
 **추출 정보**: PURPOSE, SYSTEM_TYPE, 사용자 페르소나
+
+**도메인 검토 체크리스트** (작성 후 검토자 subagent가 반영 여부 점검):
+- [ ] as-is-to-be-gap: As-Is ↔ To-Be 격차 구체화
+- [ ] value-proposition-compressed: 핵심 가치 제안 1-3개로 압축
+- [ ] measurable-vision-metrics: 측정 가능한 비전 지표(사용자 N명·처리량 X 등)
+- [ ] stakeholder-value-mapping: 이해관계자별 가치 매핑
+- [ ] timeline-short-mid-long: 시간축(단·중·장기) 명시
 <!-- /DOC: system-vision -->
 
 <!-- DOC: software-architecture -->
@@ -179,6 +200,13 @@ AI 에이전트 작업 시:
 
 **다이어그램**: `graph LR` 또는 `flowchart TB`
 **6관점 점검**: 아키텍처(스타일·확장성), 보안(인증·암호화 경로), 하네스(배포 단위)
+
+**도메인 검토 체크리스트** (작성 후 검토자 subagent가 반영 여부 점검):
+- [ ] single-responsibility: 컴포넌트 책임 단일성 (한 모듈 한 책임)
+- [ ] communication-pattern: 통신 패턴 명시 (동기/비동기/이벤트)
+- [ ] fault-isolation: 장애 격리 경계 (Bulkhead·Circuit Breaker)
+- [ ] deployment-unit-scaling: 배포 단위와 스케일링 축
+- [ ] external-dependency-fallback: 외부 의존성 fallback 전략
 <!-- /DOC: software-architecture -->
 
 <!-- DOC: security-definition -->
@@ -194,6 +222,13 @@ AI 에이전트 작업 시:
 - 취약점 관리 SLA
 
 **6관점 점검**: 보안 전체, PMO(컴플라이언스), DBA(민감 데이터)
+
+**도메인 검토 체크리스트** (작성 후 검토자 subagent가 반영 여부 점검):
+- [ ] authz-matrix: 인증·인가 매트릭스 (역할 × 리소스)
+- [ ] key-rotation-policy: 키·시크릿 회전 주기 명시
+- [ ] network-segregation: 망분리 경계 다이어그램 (폐쇄망일 때 필수)
+- [ ] sast-sca-dast-thresholds: SAST/SCA/DAST 도구별 임계값(차단/경고)
+- [ ] regulatory-mapping: 규제별(개인정보·전금·ISMS-P 등) 매핑
 <!-- /DOC: security-definition -->
 
 <!-- DOC: db-design -->
@@ -209,6 +244,13 @@ AI 에이전트 작업 시:
 
 **다이어그램**: `erDiagram`
 **6관점 점검**: DBA 전체, 보안(암호화), 아키텍처(읽기/쓰기 분리)
+
+**도메인 검토 체크리스트** (작성 후 검토자 subagent가 반영 여부 점검):
+- [ ] index-strategy: 인덱스 전략 (선택도·복합 인덱스 순서)
+- [ ] normalization-decision: 정규화 수준과 역정규화 의도적 결정 표기
+- [ ] backup-rpo-rto: 백업·복구 RPO/RTO 명시
+- [ ] partitioning-strategy: 파티셔닝 기준 (대용량 테이블)
+- [ ] closed-network-migration: 폐쇄망 제약 시 마이그레이션 절차
 <!-- /DOC: db-design -->
 
 <!-- DOC: test-plan -->
@@ -223,6 +265,13 @@ AI 에이전트 작업 시:
 - AI 모델 평가 기준 (LLM 사용 시)
 
 **6관점 점검**: 보안(OWASP 케이스), 하네스(CI 통합)
+
+**도메인 검토 체크리스트** (작성 후 검토자 subagent가 반영 여부 점검):
+- [ ] test-pyramid-ratio: 테스트 피라미드 비율 명시 (단위:통합:E2E)
+- [ ] nfr-test-scenarios: 비기능 테스트 시나리오 (성능·보안·복구)
+- [ ] test-data-isolation: 테스트 데이터 생성·격리 전략
+- [ ] env-scope-difference: 환경별 테스트 범위(dev/stg/prod 차이)
+- [ ] regression-automation-target: 회귀 테스트 자동화 비율 목표
 <!-- /DOC: test-plan -->
 
 <!-- DOC: component-spec -->
@@ -267,6 +316,13 @@ AI 에이전트 작업 시:
 - 위험요소 목록 표 (ID·이름·정의·구분: 기술/요구/관리/비즈니스)
 - 위험요소/유스케이스 관계표
 - 위험관리표 (위험별: 우선순위·발생확률·영향·발견자·해결방안·비상대책·상태)
+
+**도메인 검토 체크리스트** (작성 후 검토자 subagent가 반영 여부 점검):
+- [ ] probability-impact-quantified: 리스크별 확률 × 영향도 정량 점수
+- [ ] mitigate-transfer-accept-avoid: 완화·전이·수용·회피 전략 분류
+- [ ] owner-and-trigger: 책임자(owner)와 트리거 조건
+- [ ] residual-risk: 잔여 리스크(residual risk) 명시
+- [ ] reassessment-cadence: 정기 재평가 주기
 <!-- /DOC: risk-register -->
 
 <!-- DOC: actors -->
@@ -295,6 +351,13 @@ AI 에이전트 작업 시:
 - Mermaid 배포 다이어그램
 - 환경 표 (dev/staging/prod)
 - 확장 전략
+
+**도메인 검토 체크리스트** (작성 후 검토자 subagent가 반영 여부 점검):
+- [ ] physical-topology: 물리 토폴로지 (가용영역·리전)
+- [ ] network-bandwidth-latency: 네트워크 구간별 대역폭·지연 가정
+- [ ] monitoring-logging-path: 모니터링·로깅 수집 경로
+- [ ] dr-scenario: 재해복구 시나리오 (DR site)
+- [ ] infra-cost-estimate: 인프라 비용 추정 명시 여부
 <!-- /DOC: system-architecture -->
 
 <!-- DOC: change-request -->
@@ -306,6 +369,13 @@ AI 에이전트 작업 시:
 - 변경 근거
 - 영향 분석 (코드·문서·테스트·일정)
 - 승인 체크리스트 (PM·아키텍트·DBA·보안)
+
+**도메인 검토 체크리스트** (작성 후 검토자 subagent가 반영 여부 점검):
+- [ ] impact-scope: 변경 영향 범위 (모듈·산출물·일정)
+- [ ] rationale-and-rejection-risk: 사유와 거절 시 리스크
+- [ ] approval-flow: 승인 단계와 의사결정자
+- [ ] regression-test-scope: 회귀 테스트 범위 식별
+- [ ] requirement-id-traceability: 관련 요구사항 ID 역추적
 <!-- /DOC: change-request -->
 
 <!-- DOC: system-installation-report -->

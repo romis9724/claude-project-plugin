@@ -16,6 +16,7 @@ allowed-tools:
   - Bash(Get-ChildItem *)
   - AskUserQuestion
   - TodoWrite
+  - Agent
 ---
 
 # /si-project:project-milestone — 마일스톤 산출물 번들 생성
@@ -30,12 +31,18 @@ allowed-tools:
 - 사용자 입력 마일스톤 식별
 - **lessons.md 참고 (v2.4)**: `.claude/lessons.md` 존재 시 Read해 컨텍스트로 반영. 일관성 점검 시 lesson에 기록된 과거 불일치 패턴이 있으면 우선 검증.
 
-### 설계 결정: subagent 미도입 (v2.4 검토 후 확정)
+### 설계 결정: 작성은 순차, 검토는 subagent (v2.2 갱신)
 
-본 스킬은 의도적으로 **단일 conversation 순차 생성**을 유지한다.
+산출물 *작성*은 의도적으로 **단일 conversation 순차 생성**을 유지한다.
 - 문서간 일관성 점검(STEP 5)이 본 스킬의 핵심 가치
-- subagent 병렬 실행 시 각 agent가 다른 문서의 출력을 보지 못해 용어·요구사항 ID·이해관계자 명칭 정합성이 깨짐
+- 작성용 subagent 병렬 실행 시 각 agent가 다른 문서의 출력을 보지 못해 cross-reference(용어·요구사항 ID·이해관계자 명칭) 손실
 - 속도 < 정합성 — SI 산출물 표준에 맞는 선택
+
+산출물 *작성 후 도메인 검토*는 v2.2에서 subagent로 분리한다.
+- 검토는 단일 산출물 대상이므로 cross-reference 문제 없음
+- 작성·검토 컨텍스트 분리로 자기검증 한계 완화
+- 좁은 도메인 페르소나가 검토 한정에서는 효과 발휘
+- 부모 컨텍스트 보호: 검토자 응답 1줄만 보존
 
 **마일스톤 매핑**:
 | 입력 | 정규화 |
@@ -129,9 +136,15 @@ TodoWrite로 각 문서를 task로 등록 (진행 추적).
    - 마커 없는 문서는 생략
 3. `.claude/project-context.json` + CLAUDE.md + 소스 분석
 4. 생성 (YAML 프론트매터 + 섹션 채움 + TODO 표기)
-5. 저장 + TodoWrite 완료 표시
+5. **도메인 체크리스트 검토자 subagent 호출 (v2.2)** — methodology.md DOC 블록에 `**도메인 검토 체크리스트**`가 있는 산출물만:
+   - Agent 호출: `subagent_type=general-purpose`, `model=opus` (requirements/software-architecture/security-definition) 또는 `model=sonnet` (그 외)
+   - 프롬프트 형식은 `/si-project:project-document` SKILL의 STEP 5-5 참조
+   - 결과 1줄을 산출물별로 누적 보관 (STEP 5에서 합산)
+   - subagent 실패 시 해당 산출물은 `검토 실패`로 마킹
+6. 저장 + TodoWrite 완료 표시
 
-> 본 STEP은 **순차** 처리. subagent를 띄우지 않는다 (STEP 0 설계 결정 참조).
+> 산출물 *작성* 자체는 **순차** 처리. 작성용 subagent는 띄우지 않는다 (STEP 0 설계 결정 참조).
+> 검토자 subagent만 산출물별로 호출 — cross-reference 없는 단독 검토라 격리 가능.
 
 **일관성을 위한 공통 컨텍스트**:
 - STEP 2에서 수집한 컨텍스트 파일을 모든 문서가 공유 → 발주처명·이해관계자·일정 등이 자동으로 모든 문서에 동일하게 박힘
@@ -164,6 +177,13 @@ methodology.md의 해당 마일스톤 6관점 체크리스트 적용:
 | 하네스 | CI/CD·환경 관련 NFR 명시 |
 | 보안 | 보안 요건·인증·개인정보 처리 명시 |
 
+### 5-4. 도메인 체크리스트 합산 (v2.2)
+
+STEP 4-5에서 산출물별로 받은 검토자 subagent 결과를 합산:
+- 총 산출물 N개 중 체크리스트 보유 산출물 K개 (10개 핵심 산출물 기준)
+- 합산: 총 항목 수 X (= K × 평균 5) 중 반영 Y개, 미반영 Z개
+- 미반영 ≥ 2건인 산출물 목록 별도 표시 (STEP 6 보고에서 보강 권장)
+
 ---
 
 ## STEP 6 — 완료 보고 + CHANGELOG 기록
@@ -193,6 +213,10 @@ methodology.md의 해당 마일스톤 6관점 체크리스트 적용:
 - 용어 통일: ✅ 통과 / ⚠️ 불일치 N건
 - 크로스 레퍼런스: ✅ 통과 / ❌ 깨진 링크 N건
 - 6관점 점검: ⚠️ 보안 관점 보강 필요 (X.md, Y.md)
+
+🔎 도메인 검토 합산 (검토자 subagent, v2.2):
+- 산출물 K개 검토, 총 항목 X개 중 Y개 반영, 미반영 Z개
+- 미반영 ≥ 2건 산출물: {{file1.md, file2.md}} — ⚠️ 보강 권장
 ```
 
 ---
