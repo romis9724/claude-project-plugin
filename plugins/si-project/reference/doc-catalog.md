@@ -1,6 +1,6 @@
 ---
 title: SI 산출물 문서 카탈로그
-description: 106개 SI 표준 산출 문서 카탈로그. doc·bundle 스킬이 참조하여 템플릿·마일스톤·필수도를 결정한다.
+description: 106개 SI 표준 산출 문서 카탈로그. project-document·project-milestone 스킬이 참조하여 템플릿·마일스톤·필수도를 결정한다.
 version: 1.0
 ---
 
@@ -8,17 +8,17 @@ version: 1.0
 
 ## 사용법
 
-- `doc` 스킬: 사용자 입력 한글명/영문명을 본 카탈로그에서 매칭 → 템플릿 경로 확정
-- `bundle` 스킬: 입력 마일스톤의 `필수도=필수` 항목 모두 일괄 생성
+- `project-document` 스킬: 사용자 입력 한글명/영문명을 본 카탈로그에서 매칭 → 템플릿 경로 확정
+- `project-milestone` 스킬: 입력 마일스톤의 `필수도=필수` 항목 모두 일괄 생성
 
 ### Lazy-load 접근 패턴 (v2.4)
 
 본 파일 12KB. **전체 Read 금지**. 다음 패턴으로 접근:
 
-- **doc 스킬 (단건 매칭)**: `Grep pattern="<사용자입력>" output_mode="content" -C=1`
+- **project-document 스킬 (단건 매칭)**: `Grep pattern="<사용자입력>" output_mode="content" -C=1`
   - 한글 입력은 그대로, 영문 입력은 `.md` 포함해 매칭
   - 결과 1줄에 영문 파일명·한글명·필수도·마일스톤 행이 잡힘
-- **bundle 스킬 (마일스톤 일괄)**: 섹션 헤더 위치만 확보 후 부분 Read
+- **project-milestone 스킬 (마일스톤 일괄)**: 섹션 헤더 위치만 확보 후 부분 Read
   - `Grep pattern="^## {milestone}"` → 시작 라인 N
   - 다음 섹션 시작 라인 또는 `## 합계` 라인 → 종료 라인 M
   - `Read offset=N, limit=(M-N+1)` → 해당 마일스톤 ~25줄만 로드

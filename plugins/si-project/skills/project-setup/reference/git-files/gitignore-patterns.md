@@ -129,7 +129,7 @@ captures/
 
 ---
 
-## 적용 로직 (init이 수행)
+## 적용 로직 (project-setup이 수행)
 
 1. `common` 블록은 항상 포함
 2. `STACK_BACKEND` 텍스트 매칭:

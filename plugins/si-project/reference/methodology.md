@@ -1,6 +1,6 @@
 ---
 title: SI 프로젝트 산출물 방법론 지식
-description: AI 에이전트 기반 SI 개발에 맞게 정리한 산출물 표준 방법론 지식. doc·bundle 스킬이 산출물 생성 시 참조한다.
+description: AI 에이전트 기반 SI 개발에 맞게 정리한 산출물 표준 방법론 지식. project-document·project-milestone 스킬이 산출물 생성 시 참조한다.
 version: 1.0
 ---
 
@@ -104,12 +104,12 @@ AI 에이전트 작업 시:
 
 ## 3. 핵심 문서 작성 가이드
 
-`doc` 스킬이 각 문서 생성 시 본 절을 참조해 섹션 구조·표 컬럼·다이어그램을 결정한다.
+`project-document` 스킬이 각 문서 생성 시 본 절을 참조해 섹션 구조·표 컬럼·다이어그램을 결정한다.
 
 > **Lazy-load 패턴 (v2.4)**: 전체 섹션을 읽지 말 것. 필요한 문서의 마커만 Grep으로 위치 잡고 그 범위만 Read.
 >
 > ```
-> # 예: doc 스킬이 db-design.md 생성 시
+> # 예: project-document 스킬이 db-design.md 생성 시
 > Grep pattern="<!-- DOC: db-design -->"   → 시작 라인 N 확보
 > Grep pattern="<!-- /DOC: db-design -->"  → 종료 라인 M 확보
 > Read offset=N, limit=(M-N+1)             → 해당 섹션만 로드 (~20-40줄)

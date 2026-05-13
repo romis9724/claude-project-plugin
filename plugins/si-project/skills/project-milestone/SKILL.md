@@ -77,7 +77,7 @@ TodoWrite로 각 문서를 task로 등록 (진행 추적).
 
 ## STEP 2 — 컨텍스트 일괄 수집 (`.claude/project-context.json`)
 
-마일스톤 단위 일괄 생성이므로 doc 스킬과 달리 **한 번에 모든 필요 행정 정보를 수집**해 효율을 높인다.
+마일스톤 단위 일괄 생성이므로 project-document 스킬과 달리 **한 번에 모든 필요 행정 정보를 수집**해 효율을 높인다.
 
 ### 2-1. 컨텍스트 파일 확인
 - 없으면 신규 생성
@@ -98,7 +98,7 @@ TodoWrite로 각 문서를 task로 등록 (진행 추적).
 | 07-delivery | operations.owner/runtime/availability/rto_rpo, delivery_format.user_training, customer.contact_person |
 
 ### 2-3. 누락 정보 일괄 질문
-컨텍스트 파일에서 누락된 항목들을 묶어 AskUserQuestion 1~3회로 일괄 수집 (개별 doc 호출보다 효율적).
+컨텍스트 파일에서 누락된 항목들을 묶어 AskUserQuestion 1~3회로 일괄 수집 (개별 project-document 호출보다 효율적).
 
 수집 결과로 `.claude/project-context.json` 업데이트.
 
@@ -120,7 +120,7 @@ TodoWrite로 각 문서를 task로 등록 (진행 추적).
 
 ## STEP 4 — 일괄 생성 (순차, lazy 로드)
 
-각 누락 문서에 대해 `doc` 스킬과 동일한 로직으로 생성:
+각 누락 문서에 대해 `project-document` 스킬과 동일한 로직으로 생성:
 1. 템플릿 로드
 2. **methodology.md에서 작성 가이드 (v2.4 마커 기반 lazy 로드)**:
    - `Grep pattern="<!-- DOC: {file_stem} -->" -n` → 시작 라인 N
@@ -169,7 +169,7 @@ methodology.md의 해당 마일스톤 6관점 체크리스트 적용:
 ## STEP 6 — 완료 보고 + CHANGELOG 기록
 
 **CHANGELOG.md 1줄 append (v2.4)**:
-- `## [Unreleased]` 아래 `### Added` 섹션에 `- {YYYY-MM-DD} bundle: {milestone-id} N건 생성, 일관성 점검 통과/이슈 M건` 1줄 추가
+- `## [Unreleased]` 아래 `### Added` 섹션에 `- {YYYY-MM-DD} project-milestone: {milestone-id} N건 생성, 일관성 점검 통과/이슈 M건` 1줄 추가
 - 모든 문서가 스킵이면 기록 안 함
 
 ### 보고 형식

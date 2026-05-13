@@ -60,7 +60,7 @@ Grep pattern="^\| interface-requirements" path="<plugin>/reference/doc-catalog.m
 
 식별된 문서에 대해:
 1. **템플릿 로드**: `{플러그인_경로}/templates/{milestone}/{file}.md` 읽기
-   - 플러그인 경로 예: `~/.claude/plugins/marketplaces/team-tools/plugins/project/`
+   - 플러그인 경로 예: `~/.claude/plugins/marketplaces/team-tools/plugins/si-project/`
 2. **작성 가이드 로드 (v2.4 lazy 패턴)**: `{플러그인_경로}/reference/methodology.md` **전체 읽지 말 것**.
    - `Grep pattern="<!-- DOC: {file_stem} -->" -n` → 시작 라인 N
    - `Grep pattern="<!-- /DOC: {file_stem} -->" -n` → 종료 라인 M
@@ -72,7 +72,7 @@ Grep pattern="^\| interface-requirements" path="<plugin>/reference/doc-catalog.m
 
 ## STEP 3 — 컨텍스트 파일 확인·수집 (`.claude/project-context.json`)
 
-**행정 정보(발주처·계약·MM·검수·SLA·이해관계자 등)는 init에서 받지 않는다.** 산출물 생성 시점에 본 스킬·bundle 스킬이 모아 컨텍스트 파일에 저장·재사용한다.
+**행정 정보(발주처·계약·MM·검수·SLA·이해관계자 등)는 project-setup에서 받지 않는다.** 산출물 생성 시점에 본 스킬·project-milestone 스킬이 모아 컨텍스트 파일에 저장·재사용한다.
 
 ### 3-1. 컨텍스트 파일 존재 여부 확인
 
@@ -215,7 +215,7 @@ Grep pattern="^\| interface-requirements" path="<plugin>/reference/doc-catalog.m
 생성 후 컨텍스트 파일 업데이트 (STEP 3에서 수집된 정보 + 본 문서 작성 중 알게 된 새 정보).
 
 **CHANGELOG.md 1줄 append (v2.4)**:
-- 파일 존재 시 `## [Unreleased]` 아래 `### Added` 섹션에 `- {YYYY-MM-DD} doc: {한글 문서명} 생성 (docs/{milestone}/{file}.md)` 1줄 추가
+- 파일 존재 시 `## [Unreleased]` 아래 `### Added` 섹션에 `- {YYYY-MM-DD} project-document: {한글 문서명} 생성 (docs/{milestone}/{file}.md)` 1줄 추가
 - 덮어쓰기·병합 케이스는 `### Changed`에 기록
 - 스킵 케이스는 기록 안 함
 

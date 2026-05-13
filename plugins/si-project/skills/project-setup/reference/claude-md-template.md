@@ -134,7 +134,7 @@ docs/           — 프로젝트 문서 (SI 표준 8단계)
 - **결제**: {PG}
 - **메시징**: {MESSAGING}
 
-## Git·협업 규약 (init 자동 설정)
+## Git·협업 규약 (project-setup 자동 설정)
 
 - **Repo 모델**: mono-repo — 컴포넌트별 루트 폴더 (`{MONOREPO_LAYOUT}`)
 - **Branch 전략**: `{GIT_FLOW_STYLE}`

@@ -30,8 +30,8 @@ MADR(Markdown Architecture Decision Records) 형식의 결정 기록 1건을 생
 
 ## STEP 0 — 사전 확인 + lessons 참고
 
-1. `CLAUDE.md` 존재 → 없으면 "init이 먼저 필요합니다" 중단
-2. `docs/02-architecture/adr/` 디렉토리 존재 → 없으면 생성 (init이 만들었어야 하지만 누락 케이스 대비)
+1. `CLAUDE.md` 존재 → 없으면 "`/si-project:project-setup`이 먼저 필요합니다" 중단
+2. `docs/02-architecture/adr/` 디렉토리 존재 → 없으면 생성 (project-setup이 만들었어야 하지만 누락 케이스 대비)
 3. `.claude/lessons.md` 존재 시 Read → 과거 lesson에 동일 결정 관련 항목 있으면 컨텍스트로 활용
 
 ---

@@ -178,4 +178,4 @@
 
 > 산출물·CLAUDE.md에서 통합 표기가 필요할 때는 4개 STACK_* 변수를 콤마로 합쳐 `STACK_COMBINED` 형태로 사용할 수 있다. 다만 아키텍처·CI/CD·배포 산출물은 컴포넌트별로 분리해 작성한다.
 
-**누락 처리**: 사용자가 답하지 않거나 "없음"을 선택한 항목은 CLAUDE.md·산출물에서 자연스럽게 생략. 행정 정보(발주처·계약·MM·검수·SLA 등)는 첫 doc/bundle 호출 시점에 `.claude/project-context.json`으로 수집됨을 CLAUDE.md에 명시.
+**누락 처리**: 사용자가 답하지 않거나 "없음"을 선택한 항목은 CLAUDE.md·산출물에서 자연스럽게 생략. 행정 정보(발주처·계약·MM·검수·SLA 등)는 첫 `/si-project:project-document` 또는 `/si-project:project-milestone` 호출 시점에 `.claude/project-context.json`으로 수집됨을 CLAUDE.md에 명시.

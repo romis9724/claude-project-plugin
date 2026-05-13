@@ -1,6 +1,6 @@
 # Git 원격 정책 셋업 가이드
 
-본 문서는 init이 자동 적용할 수 없는 원격(GitHub/GitLab) 정책을 사람이 1회 실행하기 위한 체크리스트.
+본 문서는 `/si-project:project-setup`이 자동 적용할 수 없는 원격(GitHub/GitLab) 정책을 사람이 1회 실행하기 위한 체크리스트.
 
 ## 1. Remote 등록
 

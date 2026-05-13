@@ -12,7 +12,7 @@ tags: [stack, backend, frontend, mobile, db, infra]
 
 **Accepted** ({DATE})
 
-> 본 ADR은 init이 자동 생성. 팀 협의로 변경 시 신규 ADR로 Supersede.
+> 본 ADR은 project-setup이 자동 생성. 팀 협의로 변경 시 신규 ADR로 Supersede.
 
 ## Context
 
@@ -59,7 +59,7 @@ tags: [stack, backend, frontend, mobile, db, infra]
 
 ## Alternatives Considered
 
-본 ADR은 init 시점 자동 생성이라 대안 검토 기록은 비어있다. 사용자가 사후 추가 가능.
+본 ADR은 project-setup 시점 자동 생성이라 대안 검토 기록은 비어있다. 사용자가 사후 추가 가능.
 
 | 대안 | 기각 사유 |
 |------|---------|

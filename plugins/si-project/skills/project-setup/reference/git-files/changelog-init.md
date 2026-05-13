@@ -8,7 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
-- {YYYY-MM-DD} init: 프로젝트 초기화 (project plugin v2.5.1)
+- {YYYY-MM-DD} project-setup: 프로젝트 초기화 (si-project plugin v2.1.0)
 
 ### Changed
 
