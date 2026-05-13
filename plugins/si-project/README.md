@@ -1,9 +1,11 @@
-# si-project — AI Agent 기반 SI 프로젝트 산출물 플러그인 (v2.3.0)
+# si-project — AI Agent 기반 SI 프로젝트 산출물 플러그인 (v2.3.1)
 
 한국 SI 발주처 표준 산출물을 AI 에이전트 기반 개발 환경에서 자동 생성하는 플러그인입니다.
 
 발주처는 SI 표준 형식 산출물을 요구하지만, 개발은 AI 에이전트와 자유롭게 진행. 본 플러그인은 **출력 형식 보장**(워크플로우 강제 ❌) + **명확성 게이트**(모호 요구사항 추측 구현 차단) + **도메인 검토 게이트**(작성 직후 검토자 subagent 호출) + **원격 작업 큐**(`.claude/inbox.md` + GitHub Issues 통합 표시)를 목표로 합니다.
 
+> **v2.3.1 (2026-05)**: 비용 통제·중복 제거·검증 기반 보강 패치. (1) `REVIEWER_SUBAGENT` 플래그 신설(`off` / `critical-only` 기본 / `on`) — 마일스톤 일괄 생성 시 sonnet 7개 산출물의 호출 비용을 기본 차단, opus 3개 핵심 산출물만 호출. (2) 검토자 호출 결과를 산출물 파일 footer에 `<!-- review-history -->` HTML 주석으로 누적 — 사후 추세 확인·v2.4 효과 측정 근거. (3) project-inbox STEP 3 자동 도출을 `/si-project:project-check`로 위임 단순화(중복 제거). (4) 구현 단계 subagent 가이드를 CLAUDE.md에서 plugin reference로 분리(컨텍스트 절약). (5) `GH_CLI_PATH` 변수 신설(Windows PATH 미반영 환경 지원). v2.3.0과 하위 호환.
+>
 > **v2.3.0 (2026-05)**: 원격 작업 큐(`/si-project:project-inbox`) 신설. AI agent 비대기 상태에서 사용자가 모바일·웹·다른 디바이스에서 큐잉한 다음 task를 한 화면(30줄)에 표시. 로컬 `.claude/inbox.md` + GitHub Issues(label:`si-project-inbox`) + project-check 4축 자동 도출 통합. CLAUDE.md에 "원격 작업 큐" 가이드 섹션 추가(Anthropic 공식 도구 + 입력 채널). v2.2.0과 하위 호환.
 >
 > **v2.2.0 (2026-05)**: 도메인 검토 체크리스트 + 검토자 subagent 패턴 도입. 핵심 10개 산출물(project-charter / requirements / system-vision / software-architecture / security-definition / db-design / test-plan / system-architecture / risk-register / change-request)에 산출물 고유의 도메인 함정 5±2줄을 박고, 작성 직후 별도 subagent가 반영 여부를 판단해 1줄로 보고. CLAUDE.md에 구현 단계 subagent 가이드 섹션 추가. v2.1.0과 하위 호환.
@@ -125,10 +127,11 @@ AI agent 작업 완료 후·새 세션 진입 시, 사용자가 모바일·웹·
 
 ```
 si-project/
-├── .claude-plugin/plugin.json     (v2.3.0)
+├── .claude-plugin/plugin.json     (v2.3.1)
 ├── reference/
 │   ├── methodology.md           ★ 방법론 지식 + 명확도 등급(§0) + 도메인 체크리스트(v2.2, 10개)
-│   └── doc-catalog.md           ★ 106개 문서 카탈로그
+│   ├── doc-catalog.md           ★ 106개 문서 카탈로그
+│   └── subagent-patterns.md     ★ v2.3.1 — 구현 단계 Agent tool 활용 가이드(분리)
 ├── skills/
 │   ├── project-setup/
 │   │   ├── SKILL.md            (워크플로 로직만, CLAUDE.md ## 미설정 항목 자리 생성)

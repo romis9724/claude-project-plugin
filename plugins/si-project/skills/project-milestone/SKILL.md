@@ -136,11 +136,16 @@ TodoWrite로 각 문서를 task로 등록 (진행 추적).
    - 마커 없는 문서는 생략
 3. `.claude/project-context.json` + CLAUDE.md + 소스 분석
 4. 생성 (YAML 프론트매터 + 섹션 채움 + TODO 표기)
-5. **도메인 체크리스트 검토자 subagent 호출 (v2.2)** — methodology.md DOC 블록에 `**도메인 검토 체크리스트**`가 있는 산출물만:
+5. **도메인 체크리스트 검토자 subagent 호출 (v2.2 / v2.3.1 플래그 반영)** — methodology.md DOC 블록에 `**도메인 검토 체크리스트**`가 있는 산출물만:
+   - **플래그 확인 (v2.3.1)**: 마일스톤 시작 시 한 번 `Grep pattern="^REVIEWER_SUBAGENT:" path="CLAUDE.md"`로 정책 확인 (캐싱)
+     - `off`: 마일스톤 전체 검토자 호출 스킵
+     - `critical-only` (기본): opus 정책 산출물만 호출, sonnet 정책은 스킵
+     - `on`: 체크리스트 보유 산출물 모두 호출
    - Agent 호출: `subagent_type=general-purpose`, `model=opus` (requirements/software-architecture/security-definition) 또는 `model=sonnet` (그 외)
    - 프롬프트 형식은 `/si-project:project-document` SKILL의 STEP 5-5 참조
    - 결과 1줄을 산출물별로 누적 보관 (STEP 5에서 합산)
-   - subagent 실패 시 해당 산출물은 `검토 실패`로 마킹
+   - 실제 호출되어 결과를 받은 산출물은 파일 footer에 `<!-- review-history ... -->` 블록 append/update (v2.3.1, 형식은 project-document STEP 6 참조)
+   - subagent 실패 시 해당 산출물은 `검토 실패`로 마킹 (footer 누적 안 함)
 6. 저장 + TodoWrite 완료 표시
 
 > 산출물 *작성* 자체는 **순차** 처리. 작성용 subagent는 띄우지 않는다 (STEP 0 설계 결정 참조).
@@ -177,12 +182,14 @@ methodology.md의 해당 마일스톤 6관점 체크리스트 적용:
 | 하네스 | CI/CD·환경 관련 NFR 명시 |
 | 보안 | 보안 요건·인증·개인정보 처리 명시 |
 
-### 5-4. 도메인 체크리스트 합산 (v2.2)
+### 5-4. 도메인 체크리스트 합산 (v2.2 / v2.3.1 플래그 반영)
 
 STEP 4-5에서 산출물별로 받은 검토자 subagent 결과를 합산:
-- 총 산출물 N개 중 체크리스트 보유 산출물 K개 (10개 핵심 산출물 기준)
-- 합산: 총 항목 수 X (= K × 평균 5) 중 반영 Y개, 미반영 Z개
-- 미반영 ≥ 2건인 산출물 목록 별도 표시 (STEP 6 보고에서 보강 권장)
+- 플래그 `off`: 본 섹션 전체 스킵, STEP 6에 비활성 1줄만 출력
+- 플래그 `critical-only` (기본): opus 정책 산출물만 합산, sonnet 정책은 "정책 스킵"으로 카운트
+- 플래그 `on`: 체크리스트 보유 산출물 모두 합산
+- 합산 형식: 호출 K개 / 정책 스킵 S개 / 실패 F개. 호출 K개에 대해 총 항목 X중 반영 Y, 미반영 Z
+- 미반영 ≥ 2건 산출물 목록 별도 표시 (STEP 6 보고에서 보강 권장)
 
 ---
 
@@ -214,8 +221,9 @@ STEP 4-5에서 산출물별로 받은 검토자 subagent 결과를 합산:
 - 크로스 레퍼런스: ✅ 통과 / ❌ 깨진 링크 N건
 - 6관점 점검: ⚠️ 보안 관점 보강 필요 (X.md, Y.md)
 
-🔎 도메인 검토 합산 (검토자 subagent, v2.2):
-- 산출물 K개 검토, 총 항목 X개 중 Y개 반영, 미반영 Z개
+🔎 도메인 검토 합산 (검토자 subagent, v2.2, REVIEWER_SUBAGENT={{flag-value}}):
+- 호출 K개 / 정책 스킵 S개 / 실패 F개
+- 호출 K개에 대해 총 항목 X중 반영 Y, 미반영 Z
 - 미반영 ≥ 2건 산출물: {{file1.md, file2.md}} — ⚠️ 보강 권장
 ```
 

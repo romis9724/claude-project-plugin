@@ -206,12 +206,16 @@ Grep pattern="^\| interface-requirements" path="<plugin>/reference/doc-catalog.m
 
 4. **6관점 점검**: methodology.md에 명시된 해당 문서의 6관점 체크포인트 적용
 
-5. **도메인 체크리스트 검토자 subagent 호출 (v2.2)**:
+5. **도메인 체크리스트 검토자 subagent 호출 (v2.2 / v2.3.1 플래그 반영)**:
    - 산출물 작성 직후, methodology.md DOC 블록에서 `**도메인 검토 체크리스트**` 블록을 Grep으로 추출
    - 마커가 없는 산출물(10개 핵심 외)은 본 단계 스킵
+   - **플래그 확인 (v2.3.1)**: `Grep pattern="^REVIEWER_SUBAGENT:" path="CLAUDE.md"` 1줄 추출
+     - `off`: 본 단계 전체 스킵. STEP 6 보고에 `- 도메인 검토: 비활성(REVIEWER_SUBAGENT=off)` 1줄만 출력
+     - `critical-only` (기본 — 값 없거나 파싱 실패도 동일): 산출물이 opus 정책(`requirements` / `software-architecture` / `security-definition`)일 때만 호출. 그 외는 `- 도메인 검토: 스킵(critical-only 정책, 수동 체크 권장)` 1줄
+     - `on`: 10개 핵심 산출물 모두 호출
    - **Agent 도구 호출**:
      - `subagent_type`: `general-purpose`
-     - `model`: 핵심 산출물(`requirements`, `software-architecture`, `security-definition`)은 `opus`, 나머지(`db-design`, `test-plan`, `system-architecture`, `risk-register`, `change-request`, `project-charter`, `system-vision`)는 `sonnet`
+     - `model`: 핵심 산출물(`requirements`, `software-architecture`, `security-definition`)은 `opus`, 나머지는 `sonnet`
      - `description`: `{file_stem} 도메인 검토`
      - `prompt`: 아래 형식
    - 받은 결과 1줄을 STEP 6 보고의 "도메인 검토" 섹션에 그대로 출력
@@ -245,6 +249,17 @@ Grep pattern="^\| interface-requirements" path="<plugin>/reference/doc-catalog.m
 
 저장 위치: `docs/{milestone}/{file}.md`
 - 이미 존재 시 AskUserQuestion으로 사용자 확인 (덮어쓰기/스킵/이름 변경/병합)
+
+**산출물 footer 누적 (v2.3.1)**:
+- 검토자 subagent가 실제로 호출되어 결과를 받은 경우만 저장 (off / critical-only-skip / 실패 케이스는 누적 안 함 — 노이즈 회피)
+- 저장된 산출물 파일 끝(맨 마지막 줄)에 HTML 주석 블록을 append/update:
+  ```
+  <!-- review-history (si-project v2.3.1 누적):
+  - 2026-05-13 model=opus result=반영 4개 / 미반영: [key-rotation-policy]
+  -->
+  ```
+- 동일 산출물이 재생성·덮어쓰기로 다시 검토되면 기존 블록 안에 새 줄을 append (오래된 줄 유지, 사후 추세 확인용)
+- 기존 블록이 없으면 신규 생성, 있으면 닫는 `-->` 직전에 한 줄 삽입
 
 생성 후 컨텍스트 파일 업데이트 (STEP 3에서 수집된 정보 + 본 문서 작성 중 알게 된 새 정보).
 

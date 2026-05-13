@@ -11,7 +11,7 @@
     {
       "name": "si-project",
       "source": "./plugins/si-project",
-      "description": "AI 에이전트 기반 SI 프로젝트 산출물 생성 플러그인. PMO·PM·아키텍처·DBA·하네스·보안 6개 관점 통합. project-setup/document/milestone/summary/adr/check/inbox 7개 스킬 + 106개 산출물 템플릿 + GHA workflow·pre-commit·SessionStart hook 자동 셋업 + lazy loading + 팀 lesson 공유 + 요구사항 명확도 게이트 + 도메인 검토 체크리스트(10개 핵심 산출물 검토자 subagent) + 원격 작업 큐(.claude/inbox.md + GitHub Issues)."
+      "description": "AI 에이전트 기반 SI 프로젝트 산출물 생성 플러그인. PMO·PM·아키텍처·DBA·하네스·보안 6개 관점 통합. project-setup/document/milestone/summary/adr/check/inbox 7개 스킬 + 106개 산출물 템플릿 + GHA workflow·pre-commit·SessionStart hook 자동 셋업 + lazy loading + 팀 lesson 공유 + 요구사항 명확도 게이트 + 도메인 검토 체크리스트(10개 핵심 산출물 검토자 subagent, REVIEWER_SUBAGENT 플래그) + 산출물 review-history footer 누적 + 원격 작업 큐(.claude/inbox.md + GitHub Issues, GH_CLI_PATH 변수)."
     }
   ]
 }

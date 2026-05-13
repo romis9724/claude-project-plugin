@@ -67,10 +67,13 @@ Claude Code CLI 세션은 사용자가 콘솔 앞에 있을 때만 지시 가능
 
 ## STEP 2 — GitHub Issues 스캔 (label 기반)
 
-`gh` CLI 사용 가능 여부 확인:
+**gh CLI 경로 결정 (v2.3.1)**:
+1. `Grep pattern="^GH_CLI_PATH:" path="CLAUDE.md"` 1줄 추출
+2. 값이 있으면 그 절대 경로로 호출 (예: `"C:/Program Files/GitHub CLI/gh.exe" issue list ...`)
+3. 값이 비어있거나 키 자체가 없으면 PATH의 `gh` 호출
 
 ```
-Bash: gh issue list --label si-project-inbox --state open --limit 20 --json number,title,labels,assignees,url
+Bash: {GH_CLI 경로} issue list --label si-project-inbox --state open --limit 20 --json number,title,labels,assignees,url
 ```
 
 - **성공**: JSON 파싱해 표시 (번호·제목·담당자·URL)
@@ -81,17 +84,13 @@ Bash: gh issue list --label si-project-inbox --state open --limit 20 --json numb
 
 ---
 
-## STEP 3 — 자동 도출 권장 (project-check 기반)
+## STEP 3 — 자동 권장 (project-check 위임, v2.3.1)
 
-다음 4축에서 미해결 항목을 1-3개로 압축:
-1. `docs/01-requirements/`의 `명확도: 모호/미정` 행 수 → "{N}건 명확화 필요 (`/si-project:project-check`)"
-2. CLAUDE.md `## 미설정 항목`의 `- [ ]` 미체크 줄 수
-3. 산출물 내 `> ⚠️ TODO` 카운트 (최근 변경 산출물 기준 — `git log --name-only -5`)
-4. `.env.example`와 `.env` 차이의 빈 슬롯 수
+`/si-project:project-check`가 동일 4축(요구사항 모호도·`.env` 빈 슬롯·`## 미설정 항목`·TODO 카운트)을 점수화하므로 본 스킬은 카운트를 중복 계산하지 않는다. 출력은 위임 1줄만:
 
-각 1줄로 압축. 0건이면 생략.
+`🎯 자동 권장: 자세한 점검은 /si-project:project-check (4축 점수·상세)`
 
-> 본 섹션은 `/si-project:project-check`와 중복되지 않게 **카운트 + 한 줄 권장**만 표시. 상세는 project-check 호출 안내.
+> v2.3.0까지 본 단계에서 자체 카운트를 표시했으나, project-check와의 중복·노이즈 제거를 위해 v2.3.1에서 위임으로 단순화. 사용자가 카운트 상세를 원하면 project-check를 직접 호출.
 
 ---
 
@@ -111,10 +110,7 @@ Bash: gh issue list --label si-project-inbox --state open --limit 20 --json numb
 - #42 [P0] 인증서 갱신 절차 정의 — @user (https://github.com/.../issues/42)
 - #45 [P2] 매뉴얼 한글 검수 — @teammate
 
-🎯 자동 권장 (project-check 4축):
-- requirements 모호 항목 3건 → `/si-project:project-check`로 보강
-- CLAUDE.md ## 미설정 항목 2건 미체크
-- .env 빈 슬롯 5개
+🎯 자동 권장: 자세한 점검은 `/si-project:project-check` (4축 점수·상세)
 
 💡 처리 방법:
 - 로컬: inbox.md에서 [ ] → [x] 마킹
@@ -144,8 +140,8 @@ P0가 없으면 P1 → P2 순. 본 줄은 30줄 한도 안에 포함.
 사용자: /si-project:project-inbox
 Claude:
   → .claude/inbox.md 읽기 (3건)
-  → gh issue list --label si-project-inbox (2건)
-  → project-check 4축 자동 카운트 (3건)
+  → CLAUDE.md GH_CLI_PATH 확인 → gh issue list --label si-project-inbox (2건)
+  → 자동 권장은 project-check 위임 1줄
   → 통합 30줄 출력
   → "다음 추천: 결제 PG 연동 명세 받기"
 ```
