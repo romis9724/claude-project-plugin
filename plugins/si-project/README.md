@@ -1,9 +1,11 @@
-# si-project — AI Agent 기반 SI 프로젝트 산출물 플러그인 (v2.1.0)
+# si-project — AI Agent 기반 SI 프로젝트 산출물 플러그인 (v2.2.0)
 
 한국 SI 발주처 표준 산출물을 AI 에이전트 기반 개발 환경에서 자동 생성하는 플러그인입니다.
 
-발주처는 SI 표준 형식 산출물을 요구하지만, 개발은 AI 에이전트와 자유롭게 진행. 본 플러그인은 **출력 형식 보장**(워크플로우 강제 ❌) + **명확성 게이트**(모호 요구사항 추측 구현 차단)를 목표로 합니다.
+발주처는 SI 표준 형식 산출물을 요구하지만, 개발은 AI 에이전트와 자유롭게 진행. 본 플러그인은 **출력 형식 보장**(워크플로우 강제 ❌) + **명확성 게이트**(모호 요구사항 추측 구현 차단) + **도메인 검토 게이트**(작성 직후 검토자 subagent 호출)를 목표로 합니다.
 
+> **v2.2.0 (2026-05)**: 도메인 검토 체크리스트 + 검토자 subagent 패턴 도입. 핵심 10개 산출물(project-charter / requirements / system-vision / software-architecture / security-definition / db-design / test-plan / system-architecture / risk-register / change-request)에 산출물 고유의 도메인 함정 5±2줄을 박고, 작성 직후 별도 subagent가 반영 여부를 판단해 1줄로 보고. CLAUDE.md에 구현 단계 subagent 가이드 섹션 추가. v2.1.0과 하위 호환.
+>
 > **v2.1.0 (2026-05)**: 명확성 게이트(`/si-project:project-check`) 신설. 요구사항 산출물에 `명확도` 등급 컬럼 의무화. CLAUDE.md에 `## 미설정 항목` 섹션 자리 박힘. v2.0.0과 하위 호환.
 >
 > **v2.0.0 (2026-05)**: 플러그인 이름 `project` → `si-project`, 스킬 이름 모두 변경 (breaking). 마이그레이션은 저장소 루트 [README.md](../../README.md#v1x--v200-마이그레이션) 참조.
@@ -146,6 +148,26 @@ si-project/
 
 ---
 
+## 도메인 검토 체크리스트 (v2.2.0)
+
+`reference/methodology.md`의 핵심 10개 산출물 DOC 블록에 산출물 고유의 **도메인 함정 체크리스트** 5±2줄을 박았습니다. `/si-project:project-document`·`/si-project:project-milestone`이 산출물 작성 직후 **검토자 subagent**를 호출해 각 항목 반영 여부를 1줄로 보고합니다.
+
+대상 10개 산출물 (모델 정책: `opus` ★ / `sonnet` ☆):
+- ★ requirements — 명확도 등급, NFR 정량화, ID 충돌
+- ★ software-architecture — 책임 단일성, 통신 패턴, fault isolation
+- ★ security-definition — 인증 매트릭스, 키 회전, 망분리, 규제 매핑
+- ☆ project-charter — 스폰서, KPI, 범위 In/Out, DoD
+- ☆ system-vision — As-Is/To-Be 격차, 가치 제안 압축, 측정 지표
+- ☆ db-design — 인덱스 전략, 정규화 결정, RPO/RTO, 파티셔닝
+- ☆ test-plan — 테스트 피라미드, 비기능 시나리오, 격리 전략
+- ☆ system-architecture — 물리 토폴로지, 네트워크 가정, DR site, 비용
+- ☆ risk-register — 확률×영향, 전략 분류, owner·트리거, residual
+- ☆ change-request — 영향 범위, 거절 리스크, 회귀 테스트 범위
+
+상세 항목은 `reference/methodology.md` 각 DOC 블록 참조. 나머지 10개 산출물은 v2.3에서 보강 예정.
+
+---
+
 ## 8단계 매핑
 
 | 단계 | 디렉토리 | 필수 산출물 |
@@ -207,7 +229,7 @@ si-project/
 - **워크플로 강제 X, 출력 형식 보장 O**: 발주처에 납품할 때 표준 형식만 유지. 개발 단계 게이트는 강제하지 않음
 - **명확성 게이트 (v2.1.0+)**: 모호한 요구사항·미설정 외부 정보 상태에서 AI가 추측 구현하는 사고를 신호화. `project-check`는 차단이 아닌 자기 점검 도구
 - **Lazy loading**: methodology.md/doc-catalog.md/CLAUDE.md 모두 마커·부분 로드. 컨텍스트 절약
-- **subagent 미도입**: project-milestone에서 의도적으로 순차 생성. 병렬화 시 문서간 정합성 깨지는 부작용 회피
+- **작성 subagent 미도입, 검토 subagent 도입 (v2.2)**: project-document·project-milestone은 산출물 *작성*을 순차로 (cross-reference 손실 회피). 작성 직후 *검토*만 별도 subagent로 분리 — 검토는 단일 산출물 대상이라 격리 가능. 페르소나 정신을 검토 단계에서만 실현
 - **자동 기록 X**: `.claude/lessons.md`는 사용자가 직접 큐레이션. 자동 누적은 편향 위험
 - **팀 공유 우선**: lessons.md는 gitignore에서 제외. 팀 공유 가치 있는 lesson만 기록
 

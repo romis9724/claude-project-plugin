@@ -15,6 +15,7 @@ allowed-tools:
   - Bash(ls *)
   - Bash(Get-ChildItem *)
   - AskUserQuestion
+  - Agent
 ---
 
 # /si-project:project-document — 개별 산출물 문서 생성
@@ -205,6 +206,39 @@ Grep pattern="^\| interface-requirements" path="<plugin>/reference/doc-catalog.m
 
 4. **6관점 점검**: methodology.md에 명시된 해당 문서의 6관점 체크포인트 적용
 
+5. **도메인 체크리스트 검토자 subagent 호출 (v2.2)**:
+   - 산출물 작성 직후, methodology.md DOC 블록에서 `**도메인 검토 체크리스트**` 블록을 Grep으로 추출
+   - 마커가 없는 산출물(10개 핵심 외)은 본 단계 스킵
+   - **Agent 도구 호출**:
+     - `subagent_type`: `general-purpose`
+     - `model`: 핵심 산출물(`requirements`, `software-architecture`, `security-definition`)은 `opus`, 나머지(`db-design`, `test-plan`, `system-architecture`, `risk-register`, `change-request`, `project-charter`, `system-vision`)는 `sonnet`
+     - `description`: `{file_stem} 도메인 검토`
+     - `prompt`: 아래 형식
+   - 받은 결과 1줄을 STEP 6 보고의 "도메인 검토" 섹션에 그대로 출력
+   - subagent 실패(타임아웃·에러) 시 fallback: `- 도메인 체크리스트: 검토 실패, 수동 점검 권장`
+
+   **검토자 프롬프트 형식**:
+   ```
+   당신은 {산출물 도메인} 검토자입니다. 페르소나: {산출물에 맞는 전문가 — 예: "20년 경력 시니어 DBA" for db-design, "정보보호 컨설턴트(ISMS-P 인증심사원)" for security-definition}.
+
+   다음 산출물 본문이 체크리스트 N개 항목 각각을 충분히 반영했는지 판단하세요. "언급만" 한 경우는 미반영으로 분류 — 구체적 값·전략·근거가 있어야 반영.
+
+   [산출물 본문]
+   {산출물_본문_전문}
+
+   [체크리스트]
+   - {kebab-key1}: {항목 설명}
+   - {kebab-key2}: {항목 설명}
+   ... (5개)
+
+   응답 형식 (정확히 1줄, 그 외 어떤 설명도 금지):
+   반영 M개 / 미반영: [kebab-key,kebab-key]
+
+   모든 항목 반영 시 미반영은 'all' 단어로 표기.
+   ```
+
+   **부모 컨텍스트 보호 원칙**: subagent 응답 본문 1줄만 보존. subagent 내부 사고·근거는 폐기.
+
 ---
 
 ## STEP 6 — 저장 및 보고
@@ -232,6 +266,10 @@ Grep pattern="^\| interface-requirements" path="<plugin>/reference/doc-catalog.m
 
 📝 컨텍스트 파일 업데이트:
 - {{새로 추가된 필드 목록 또는 "변경 없음"}}
+
+🔎 도메인 검토 (검토자 subagent, v2.2 — 10개 핵심 산출물만):
+- {{subagent 1줄 결과 그대로 — 예: "반영 4개 / 미반영: [key-rotation-policy]"}}
+- {{미반영 ≥ 2개일 때만 추가: "⚠️ 위 항목 보강 권장"}}
 
 ⚠️ 사람 입력 필요 (TODO):
 - {{TODO 항목 목록 — 보통 3~7개}}
